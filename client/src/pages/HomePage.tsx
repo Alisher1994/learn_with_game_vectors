@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { VectorMascot } from "../components/VectorMascot";
+import { AiRobotMascot } from "../components/AiRobotMascot";
 import { api } from "../socketUrl";
 
 export function HomePage() {
@@ -31,7 +31,7 @@ export function HomePage() {
             flexWrap: "wrap",
           }}
         >
-          <VectorMascot mood="happy" size={100} />
+          <AiRobotMascot mood="happy" size={100} />
           <div style={{ textAlign: "left", maxWidth: 420 }}>
             <h1 style={{ margin: "0 0 0.35rem", fontSize: "1.75rem" }}>
               Вектор-баттл

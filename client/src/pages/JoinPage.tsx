@@ -4,7 +4,7 @@ import { io, Socket } from "socket.io-client";
 import type { ClassEntry, GamePublicState, TeamId } from "@shared/types";
 import { VECTOR_QUESTIONS } from "@shared/questions";
 import { TEAM_AVATARS } from "../data/avatars";
-import { VectorMascot } from "../components/VectorMascot";
+import { AiRobotMascot } from "../components/AiRobotMascot";
 import { api, getSocketUrl, SOCKET_OPTIONS } from "../socketUrl";
 function isTeam(s: string | undefined): s is TeamId {
   return s === "blue" || s === "red";
@@ -144,7 +144,7 @@ export function JoinPage() {
   return (
     <div className="page">
       <div className="row" style={{ marginBottom: "1rem" }}>
-        <VectorMascot mood="happy" size={56} />
+        <AiRobotMascot mood="happy" size={56} />
         <div>
           <h1 style={{ margin: 0, fontSize: "1.35rem", color: teamColor }}>
             {teamLabel}

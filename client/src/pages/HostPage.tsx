@@ -4,7 +4,7 @@ import QRCode from "qrcode";
 import { io, Socket } from "socket.io-client";
 import type { GamePublicState, TeamId, TeamState } from "@shared/types";
 import { VECTOR_QUESTIONS } from "@shared/questions";
-import { VectorMascot } from "../components/VectorMascot";
+import { AiRobotMascot } from "../components/AiRobotMascot";
 import { ConfettiSalute } from "../components/ConfettiSalute";
 import { TEAM_AVATARS } from "../data/avatars";
 import { api, getSocketUrl, SOCKET_OPTIONS } from "../socketUrl";
@@ -279,7 +279,7 @@ export function HostPage() {
             flexWrap: "wrap",
           }}
         >
-          <VectorMascot
+          <AiRobotMascot
             mood={state?.phase === "finished" ? "win" : "happy"}
             size={88}
           />
@@ -420,7 +420,7 @@ export function HostPage() {
                 }
               />
               <div style={{ position: "relative", zIndex: 2 }}>
-                <VectorMascot mood="win" size={120} />
+                <AiRobotMascot mood="win" size={120} />
                 <h3
                   style={{
                     margin: "0.75rem 0",
