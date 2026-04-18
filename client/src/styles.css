@@ -123,3 +123,272 @@ select {
 .team-red {
   color: var(--red);
 }
+
+/* ——— Экран учителя «арена» ——— */
+.page--host-arena {
+  max-width: min(1420px, 98vw);
+  padding-top: 0.5rem;
+}
+
+/* HUD счёта (стиль файтинга) */
+.fight-hud {
+  position: sticky;
+  top: 0;
+  z-index: 20;
+  margin: 0 auto 1rem;
+  padding: 0.65rem 1rem 0.85rem;
+  background: linear-gradient(180deg, #0c1018 0%, #151c28 55%, rgba(21, 28, 40, 0.92) 100%);
+  border: 2px solid rgba(234, 179, 8, 0.35);
+  border-radius: 14px;
+  box-shadow:
+    0 0 0 1px rgba(0, 0, 0, 0.5),
+    0 12px 40px rgba(0, 0, 0, 0.55),
+    inset 0 1px 0 rgba(255, 255, 255, 0.06);
+}
+
+.fight-hud__scores {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: clamp(0.5rem, 3vw, 2rem);
+  margin-bottom: 0.45rem;
+}
+
+.fight-hud__num {
+  font-weight: 900;
+  font-variant-numeric: tabular-nums;
+  line-height: 1;
+  letter-spacing: -0.03em;
+  text-shadow:
+    0 0 20px currentColor,
+    0 4px 0 rgba(0, 0, 0, 0.45);
+  font-size: clamp(2.75rem, 10vw, 5.5rem);
+}
+
+.fight-hud__num--blue {
+  color: #60a5fa;
+}
+
+.fight-hud__num--red {
+  color: #fb7185;
+}
+
+.fight-hud__vs {
+  font-weight: 900;
+  font-size: clamp(1.25rem, 4vw, 2.25rem);
+  color: #fbbf24;
+  text-shadow: 0 0 18px rgba(251, 191, 36, 0.55);
+  letter-spacing: 0.12em;
+}
+
+.fight-hud__meta {
+  text-align: center;
+  font-size: clamp(0.85rem, 2vw, 1.1rem);
+  color: var(--muted);
+  margin-bottom: 0.4rem;
+}
+
+.fight-hud__bars {
+  display: flex;
+  align-items: stretch;
+  gap: 0.5rem;
+  height: clamp(18px, 2.8vw, 28px);
+}
+
+.fight-hud__track {
+  flex: 1;
+  background: rgba(0, 0, 0, 0.45);
+  border-radius: 6px;
+  overflow: hidden;
+  border: 1px solid rgba(148, 163, 184, 0.2);
+  display: flex;
+}
+
+.fight-hud__track--blue {
+  justify-content: flex-start;
+}
+
+.fight-hud__track--red {
+  justify-content: flex-end;
+}
+
+.fight-hud__fill {
+  height: 100%;
+  min-width: 0;
+  border-radius: 5px;
+  transition: width 0.55s cubic-bezier(0.22, 1, 0.36, 1);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.2);
+}
+
+.fight-hud__fill--blue {
+  background: linear-gradient(90deg, #1e40af, #3b82f6, #93c5fd);
+}
+
+.fight-hud__fill--red {
+  background: linear-gradient(90deg, #fecaca, #ef4444, #991b1b);
+}
+
+/* Кто ответил — крупно */
+.answer-arena {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: clamp(0.75rem, 2vw, 1.5rem);
+  margin: 1rem 0 1.25rem;
+  min-height: clamp(5rem, 18vw, 9rem);
+}
+
+.answer-arena__side {
+  border-radius: 14px;
+  padding: clamp(0.75rem, 2vw, 1.25rem);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  border: 2px solid transparent;
+  transition: border-color 0.2s ease, background 0.2s ease, transform 0.2s ease;
+}
+
+.answer-arena__side--blue {
+  background: rgba(59, 130, 246, 0.12);
+}
+
+.answer-arena__side--red {
+  background: rgba(239, 68, 68, 0.12);
+}
+
+.answer-arena__side--active-blue {
+  border-color: rgba(59, 130, 246, 0.85);
+  background: rgba(59, 130, 246, 0.22);
+  box-shadow: 0 0 32px rgba(59, 130, 246, 0.25);
+}
+
+.answer-arena__side--active-red {
+  border-color: rgba(239, 68, 68, 0.85);
+  background: rgba(239, 68, 68, 0.22);
+  box-shadow: 0 0 32px rgba(239, 68, 68, 0.25);
+}
+
+.answer-arena__side--wait {
+  opacity: 0.85;
+}
+
+.answer-arena__big {
+  font-weight: 900;
+  font-size: clamp(1.35rem, 4.5vw, 2.75rem);
+  line-height: 1.15;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.answer-arena__side--active-blue .answer-arena__big,
+.answer-arena__side--active-red .answer-arena__big {
+  font-size: clamp(1.85rem, 6.5vw, 4rem);
+}
+
+.answer-arena__sub {
+  margin-top: 0.35rem;
+  font-size: clamp(1rem, 3vw, 1.65rem);
+  font-weight: 700;
+  color: var(--muted);
+}
+
+/* Вопрос и варианты — крупно для зала */
+.host-question {
+  font-weight: 800;
+  font-size: clamp(1.5rem, 4.2vw, 3.1rem);
+  line-height: 1.2;
+  margin: 0 0 1.25rem;
+  text-shadow: 0 2px 16px rgba(0, 0, 0, 0.45);
+}
+
+.host-options {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: clamp(0.55rem, 1.5vw, 1rem);
+}
+
+.host-options li {
+  font-size: clamp(1.15rem, 3vw, 2.15rem);
+  line-height: 1.35;
+  font-weight: 700;
+  padding: clamp(0.55rem, 1.4vw, 1rem) clamp(0.85rem, 2vw, 1.35rem);
+  background: rgba(15, 23, 42, 0.55);
+  border: 2px solid rgba(148, 163, 184, 0.2);
+  border-radius: 12px;
+  color: #e2e8f0;
+}
+
+.host-options__letter {
+  display: inline-block;
+  min-width: 1.4em;
+  color: #fbbf24;
+  font-weight: 900;
+}
+
+/* Правильный ответ — заметно */
+.host-correct-box {
+  position: relative;
+  margin: 1rem 0 1.25rem;
+  padding: clamp(1rem, 2.5vw, 1.75rem);
+  border-radius: 16px;
+  background: linear-gradient(135deg, rgba(22, 163, 74, 0.35), rgba(21, 128, 61, 0.55));
+  border: 3px solid #4ade80;
+  box-shadow:
+    0 0 0 1px rgba(74, 222, 128, 0.4),
+    0 0 48px rgba(34, 197, 94, 0.35),
+    inset 0 1px 0 rgba(255, 255, 255, 0.15);
+  overflow: hidden;
+}
+
+.host-correct-box__label {
+  font-size: clamp(0.95rem, 2.2vw, 1.25rem);
+  font-weight: 800;
+  color: #bbf7d0;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  margin-bottom: 0.35rem;
+}
+
+.host-correct-box__text {
+  font-size: clamp(1.35rem, 3.8vw, 2.6rem);
+  font-weight: 900;
+  color: #fff;
+  line-height: 1.25;
+  text-shadow: 0 2px 12px rgba(0, 0, 0, 0.5);
+}
+
+.host-game-card {
+  position: relative;
+  overflow: visible;
+}
+
+/* Салют */
+.confetti-salute {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: 5;
+  overflow: hidden;
+}
+
+.confetti-salute__piece {
+  position: absolute;
+  border-radius: 2px;
+  opacity: 0;
+  animation: confetti-burst 2.1s ease-out forwards;
+}
+
+@keyframes confetti-burst {
+  0% {
+    opacity: 1;
+    transform: translate(0, 0) rotate(0deg) scale(1);
+  }
+  100% {
+    opacity: 0;
+    transform: translate(var(--drift), -180%) rotate(720deg) scale(0.2);
+  }
+}

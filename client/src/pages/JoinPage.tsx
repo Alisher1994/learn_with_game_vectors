@@ -5,7 +5,7 @@ import type { ClassEntry, GamePublicState, TeamId } from "@shared/types";
 import { VECTOR_QUESTIONS } from "@shared/questions";
 import { TEAM_AVATARS } from "../data/avatars";
 import { VectorMascot } from "../components/VectorMascot";
-import { api, getSocketUrl } from "../socketUrl";
+import { api, getSocketUrl, SOCKET_OPTIONS } from "../socketUrl";
 function isTeam(s: string | undefined): s is TeamId {
   return s === "blue" || s === "red";
 }
@@ -27,6 +27,37 @@ export function JoinPage() {
   const [ready, setReady] = useState(false);
   const [pickedClassId, setPickedClassId] = useState<string>("");
 
+  /** Актуальные поля для emit без устаревших замыканий */
+  const teamPayloadRef = useRef({
+    className: "",
+    groupLabel: "",
+    members: [] as string[],
+    avatarId: null as string | null,
+    ready: false,
+  });
+  teamPayloadRef.current = {
+    className,
+    groupLabel,
+    members: members.map((m) => m.trim()).filter(Boolean),
+    avatarId,
+    ready,
+  };
+
+  /** Пока join не подтверждён, сервер игнорирует updateTeam — ждём ack */
+  const canEmitRef = useRef(false);
+
+  const emitUpdate = useCallback(() => {
+    if (!canEmitRef.current || !socketRef.current?.connected) return;
+    const p = teamPayloadRef.current;
+    socketRef.current.emit("updateTeam", {
+      className: p.className,
+      groupLabel: p.groupLabel,
+      members: p.members,
+      avatarId: p.avatarId,
+      ready: p.ready,
+    });
+  }, []);
+
   useEffect(() => {
     void api<ClassEntry[]>("/api/classes").then(setClasses).catch(() => {});
   }, []);
@@ -37,33 +68,37 @@ export function JoinPage() {
       .catch(() => setState(null));
   }, [roomId]);
 
-  const pushUpdate = useCallback(() => {
-    socketRef.current?.emit("updateTeam", {
-      className,
-      groupLabel,
-      members: members.map((m) => m.trim()).filter(Boolean),
-      avatarId,
-      ready,
-    });
-  }, [className, groupLabel, members, avatarId, ready]);
-
   useEffect(() => {
-    const s: Socket = io(socketUrl, { transports: ["websocket", "polling"] });
+    const s: Socket = io(socketUrl, { ...SOCKET_OPTIONS });
     socketRef.current = s;
+    canEmitRef.current = false;
     s.on("connect", () => {
-      s.emit("join", { roomId, team });
+      s.emit("join", { roomId, team }, () => {
+        canEmitRef.current = true;
+        emitUpdate();
+      });
+    });
+    s.on("disconnect", () => {
+      canEmitRef.current = false;
     });
     s.on("state", (st: GamePublicState) => setState(st));
     return () => {
+      canEmitRef.current = false;
       socketRef.current = null;
       s.disconnect();
     };
-  }, [roomId, team, socketUrl]);
+  }, [roomId, team, socketUrl, emitUpdate]);
 
+  /** «Готовы» и аватар — сразу, без debounce */
   useEffect(() => {
-    const t = window.setTimeout(() => pushUpdate(), 350);
+    emitUpdate();
+  }, [ready, avatarId, emitUpdate]);
+
+  /** Текстовые поля — реже, чтобы не спамить сервер */
+  useEffect(() => {
+    const t = window.setTimeout(() => emitUpdate(), 280);
     return () => window.clearTimeout(t);
-  }, [pushUpdate]);
+  }, [className, groupLabel, members, emitUpdate]);
 
   const q = useMemo(() => {
     if (!state || state.phase !== "playing") return null;

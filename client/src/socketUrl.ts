@@ -4,6 +4,12 @@ export function getSocketUrl(): string {
   return window.location.origin;
 }
 
+/** Общие опции клиента Socket.IO (тот же path, что и на сервере) */
+export const SOCKET_OPTIONS = {
+  path: "/socket.io",
+  transports: ["websocket", "polling"] as const,
+};
+
 export async function api<T>(path: string, init?: RequestInit): Promise<T> {
   const base = import.meta.env.DEV ? "http://127.0.0.1:3001" : "";
   const res = await fetch(`${base}${path}`, {
