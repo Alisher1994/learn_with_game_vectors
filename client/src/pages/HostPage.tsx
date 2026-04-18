@@ -5,7 +5,10 @@ import { io, Socket } from "socket.io-client";
 import type { GamePublicState, TeamId, TeamState } from "@shared/types";
 import { VECTOR_QUESTIONS } from "@shared/questions";
 import { AiRobotMascot } from "../components/AiRobotMascot";
-import { ConfettiSalute } from "../components/ConfettiSalute";
+import { HostConfettiLottie } from "../components/HostConfettiLottie";
+import { HostWaitAstronaut } from "../components/HostWaitAstronaut";
+import { HOST_LOTTIE } from "../data/hostLottiePaths";
+import { DotLottieReact } from "@lottiefiles/dotlottie-react";
 import { TEAM_AVATARS } from "../data/avatars";
 import { api, getSocketUrl, SOCKET_OPTIONS } from "../socketUrl";
 
@@ -75,6 +78,7 @@ function AnswerArenaStrip({ state }: { state: GamePublicState }) {
         <div className="answer-arena__sub">
           {blueDone ? (redDone ? "" : "Ждём красных") : "ожидание ответа"}
         </div>
+        {!blueDone && redDone ? <HostWaitAstronaut /> : null}
       </div>
       <div
         className={[
@@ -88,6 +92,7 @@ function AnswerArenaStrip({ state }: { state: GamePublicState }) {
         <div className="answer-arena__sub">
           {redDone ? (blueDone ? "" : "Ждём синих") : "ожидание ответа"}
         </div>
+        {blueDone && !redDone ? <HostWaitAstronaut /> : null}
       </div>
     </div>
   );
@@ -381,8 +386,8 @@ export function HostPage() {
           )}
 
           {state.phase === "between" && state.lastReveal && q && (
-            <div style={{ position: "relative", minHeight: 120 }}>
-              <ConfettiSalute side={confettiSideFromReveal(state.lastReveal)} />
+            <div style={{ position: "relative", minHeight: 280 }}>
+              <HostConfettiLottie side={confettiSideFromReveal(state.lastReveal)} />
               <AnswerArenaStrip state={state} />
               <div className="host-correct-box">
                 <div className="host-correct-box__label">Верный вариант</div>
@@ -407,8 +412,8 @@ export function HostPage() {
           )}
 
           {state.phase === "finished" && (
-            <div style={{ marginTop: "0.5rem", textAlign: "center", position: "relative", minHeight: 220 }}>
-              <ConfettiSalute
+            <div style={{ marginTop: "0.5rem", textAlign: "center", position: "relative", minHeight: 320 }}>
+              <HostConfettiLottie
                 side={
                   state.winner === "blue"
                     ? "blue"
@@ -453,6 +458,18 @@ export function HostPage() {
                 <p style={{ color: "var(--muted)", fontSize: "clamp(0.9rem, 2vw, 1.1rem)" }}>
                   Результаты сохранены в таблице рейтингов.
                 </p>
+                <div className="host-trophy-wrap">
+                  <DotLottieReact
+                    src={HOST_LOTTIE.trophy}
+                    loop
+                    autoplay
+                    aria-label="Кубок"
+                    style={{
+                      width: "min(92vw, 440px)",
+                      height: "min(38vh, 300px)",
+                    }}
+                  />
+                </div>
                 <Link
                   to="/ratings"
                   className="btn btn-ghost"

@@ -1,3 +1,8 @@
-Файл анимации:  Ai Robot Vector Art.lottie
+Lottie files for host screen (client/public/):
 
-Он должен лежать в этой папке (client/public/). Копия также может храниться в корне репозитория — при сборке Vite берёт файл отсюда.
+- Ai Robot Vector Art.lottie — mascot
+- Trophy.lottie — end of game
+- confetti on transparent background.lottie — correct answer celebration
+- Astronaut Illustration.lottie — waiting for the other team
+
+Exact filenames (including spaces) must match.

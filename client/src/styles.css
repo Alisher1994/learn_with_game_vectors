@@ -243,10 +243,11 @@ select {
   display: flex;
   flex-direction: column;
   align-items: center;
-  justify-content: center;
+  justify-content: flex-start;
   text-align: center;
   border: 2px solid transparent;
   transition: border-color 0.2s ease, background 0.2s ease, transform 0.2s ease;
+  min-height: min(320px, 38vh);
 }
 
 .answer-arena__side--blue {
@@ -391,4 +392,39 @@ select {
     opacity: 0;
     transform: translate(var(--drift), -180%) rotate(720deg) scale(0.2);
   }
+}
+
+/* Lottie-салют на экране учителя */
+.host-lottie-confetti {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: 4;
+  display: flex;
+  align-items: flex-start;
+  padding-top: 0.25rem;
+}
+
+.host-lottie-confetti--both {
+  justify-content: center;
+}
+
+.host-lottie-confetti--blue {
+  justify-content: flex-start;
+  padding-left: 1%;
+}
+
+.host-lottie-confetti--red {
+  justify-content: flex-end;
+  padding-right: 1%;
+}
+
+.host-trophy-wrap {
+  display: flex;
+  justify-content: center;
+  margin: 0.75rem 0 1rem;
+}
+
+.host-trophy-wrap canvas {
+  max-width: 100%;
 }
