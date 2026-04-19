@@ -81,7 +81,7 @@ function AnswerArenaStrip({ state, lang }: { state: GamePublicState; lang: Lang 
           {blueDone ? copy.blueAnswered : copy.blueWaiting}
         </div>
         <div className="answer-arena__sub">
-          {blueDone ? (redDone ? "" : copy.waitRed) : copy.waitingAnswer}
+          {blueDone ? "" : redDone ? copy.waitBlue : copy.waitingAnswer}
         </div>
         {!blueDone && redDone ? <HostWaitAstronaut /> : null}
       </div>
@@ -95,7 +95,7 @@ function AnswerArenaStrip({ state, lang }: { state: GamePublicState; lang: Lang 
           {redDone ? copy.redAnswered : copy.redWaiting}
         </div>
         <div className="answer-arena__sub">
-          {redDone ? (blueDone ? "" : copy.waitBlue) : copy.waitingAnswer}
+          {redDone ? "" : blueDone ? copy.waitRed : copy.waitingAnswer}
         </div>
         {blueDone && !redDone ? <HostWaitAstronaut /> : null}
       </div>
@@ -121,25 +121,17 @@ function avatarEmoji(id: string | null) {
 function TeamLobbyBlock({
   title,
   colorVar,
-  joinSuffix,
-  joinBase,
-  qrDataUrl,
   team,
   lang,
 }: {
   title: string;
   colorVar: string;
-  joinSuffix: "blue" | "red";
-  joinBase: string;
-  qrDataUrl: string;
   team: TeamState | undefined;
   lang: Lang;
 }) {
   const copy = t[lang];
   const connected = team?.connected ?? false;
   const ready = team?.ready ?? false;
-  const showQr = !connected || !ready;
-  const url = `${joinBase}/${joinSuffix}`;
 
   return (
     <div
@@ -160,9 +152,6 @@ function TeamLobbyBlock({
           justifyContent: "center",
         }}
       >
-        {showQr && qrDataUrl ? (
-          <img src={qrDataUrl} alt={`QR ${title}`} style={{ maxWidth: "100%", width: 220 }} />
-        ) : null}
         {connected && ready ? (
           <div style={{ textAlign: "center" }}>
             <div style={{ fontSize: "6.5rem", lineHeight: 1 }}>
@@ -178,15 +167,19 @@ function TeamLobbyBlock({
             ) : null}
           </div>
         ) : null}
-      </div>
-
-      <div style={{ fontSize: "0.82rem", marginTop: 10, color: "var(--muted)", wordBreak: "break-all" }}>
-        {url}
+        {!connected && (
+          <div style={{ textAlign: "center", color: "var(--muted)", fontWeight: 800 }}>
+            {copy.waitQr}
+          </div>
+        )}
+        {connected && !ready && (
+          <div style={{ textAlign: "center", color: "var(--warn)", fontWeight: 800 }}>
+            {copy.onlineFilling}
+          </div>
+        )}
       </div>
 
       <div style={{ marginTop: 10, fontSize: "0.95rem" }}>
-        {!connected && <span style={{ color: "var(--muted)" }}>{copy.waitQr}</span>}
-        {connected && !ready && <span style={{ color: "var(--warn)" }}>{copy.onlineFilling}</span>}
         {connected && ready && <span style={{ color: "var(--ok)" }}>{copy.onlineReady}</span>}
       </div>
     </div>
@@ -198,14 +191,13 @@ export function HostPage() {
   const { lang } = useI18n();
   const copy = t[lang];
   const [state, setState] = useState<GamePublicState | null>(null);
-  const [qrBlue, setQrBlue] = useState("");
-  const [qrRed, setQrRed] = useState("");
+  const [qrJoin, setQrJoin] = useState("");
   const socketUrl = getSocketUrl();
   const socketRef = useRef<Socket | null>(null);
 
   const joinBase = useMemo(() => {
     if (typeof window === "undefined") return "";
-    return `${window.location.origin}/join/${roomId}`;
+      return `${window.location.origin}/join/${roomId}`;
   }, [roomId]);
 
   useEffect(() => {
@@ -216,8 +208,7 @@ export function HostPage() {
 
   useEffect(() => {
     if (!joinBase) return;
-    void QRCode.toDataURL(`${joinBase}/blue`, { margin: 1, width: 220 }).then(setQrBlue);
-    void QRCode.toDataURL(`${joinBase}/red`, { margin: 1, width: 220 }).then(setQrRed);
+    void QRCode.toDataURL(joinBase, { margin: 1, width: 260 }).then(setQrJoin);
   }, [joinBase]);
 
   useEffect(() => {
@@ -296,6 +287,14 @@ export function HostPage() {
           </div>
         </div>
 
+        <div className="host-single-qr">
+          {qrJoin ? <img src={qrJoin} alt="QR join" className="host-single-qr__image" /> : null}
+          <div className="host-single-qr__text">
+            <div className="host-single-qr__title">{copy.oneQrTitle}</div>
+            <div className="host-single-qr__sub">{copy.scanQrText}</div>
+          </div>
+        </div>
+
         <div
           style={{
             display: "grid",
@@ -308,18 +307,12 @@ export function HostPage() {
           <TeamLobbyBlock
             title={copy.blueTeam}
             colorVar="var(--blue)"
-            joinSuffix="blue"
-            joinBase={joinBase}
-            qrDataUrl={qrBlue}
             team={state?.blue}
             lang={lang}
           />
           <TeamLobbyBlock
             title={copy.redTeam}
             colorVar="var(--red)"
-            joinSuffix="red"
-            joinBase={joinBase}
-            qrDataUrl={qrRed}
             team={state?.red}
             lang={lang}
           />

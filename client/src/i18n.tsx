@@ -50,8 +50,11 @@ export const t = {
     homeText:
       "Яркая математическая игра для детей: две команды, быстрые ответы, большой экран, дружелюбный персонаж и понятные подсказки без перегруза.",
     createRoom: "Новая игра (экран учителя)",
+    startShort: "Начать",
     creatingRoom: "Создаём комнату…",
     teacherDirectory: "Справочник классов и ФИО (заранее)",
+    teacherSettings: "Классы",
+    rankingShort: "Рейтинг",
     rankingsTitleLink: "Таблица рейтингов",
     homeFooter:
       "Ученики подключаются по QR-коду, выбирают команду и отвечают прямо со своих телефонов.",
@@ -63,6 +66,13 @@ export const t = {
     redVector: "Красный вектор",
     joinIntro:
       "Подключайтесь спокойно: экран стал компактнее, а ответы помещаются удобнее даже на небольшом телефоне.",
+    chooseTeam: "Выберите команду",
+    chooseTeamText: "После входа свободна только одна сторона: если синяя уже занята, выбирайте красную.",
+    teamBusy: "Эта команда уже занята",
+    teamFree: "Свободна для входа",
+    enterBlue: "Войти за синих",
+    enterRed: "Войти за красных",
+    teamBusyShort: "занято",
     assembleTeam: "Соберите команду",
     assembleText:
       "Сначала выберите образ команды, затем быстро заполните участников и нажмите готовность.",
@@ -82,8 +92,6 @@ export const t = {
     countingOnScreen: "Идёт подсчёт на большом экране…",
     gameFinished: "Игра окончена. Смотрите итог на экране учителя.",
     rating: "Рейтинг",
-    tipDirectory:
-      "Подсказка: учитель может заранее заполнить классы в разделе «Справочник».",
     teacherTitle: "Справочник классов и ФИО",
     teacherText:
       "Учитель заполняет список заранее. На телефонах ученики смогут выбрать класс и подставить фамилии одним нажатием.",
@@ -105,8 +113,10 @@ export const t = {
     points: "очков",
     arenaTitle: "Экран для класса",
     arenaText:
-      "Два QR-кода для синей и красной команды. Экран сделан ярче и понятнее: детям легче считать статус команд, персонажа и моменты победы.",
+      "Один QR-код ведёт на экран выбора команды. Как только одна сторона занята, второй команде остаётся только свободная.",
     waitQr: "Ждём подключения по QR",
+    oneQrTitle: "Один QR для входа",
+    scanQrText: "Ученики сканируют код и внутри выбирают свободную команду.",
     onlineFilling: "Онлайн — заполняют анкету",
     onlineReady: "Онлайн и готовы к старту",
     blueAnswered: "Синие ответили!",
@@ -152,8 +162,11 @@ export const t = {
     homeText:
       "Bolalar uchun yorqin matematik o'yin: ikki jamoa, tezkor javoblar, katta ekran, do'stona personaj va ortiqcha yuklamasiz tushunarli ko'rsatmalar.",
     createRoom: "Yangi o'yin (o'qituvchi ekrani)",
+    startShort: "Boshlash",
     creatingRoom: "Xona yaratilmoqda…",
     teacherDirectory: "Sinflar va F.I.Sh. ro'yxati",
+    teacherSettings: "Sinflar",
+    rankingShort: "Reyting",
     rankingsTitleLink: "Natijalar jadvali",
     homeFooter:
       "O'quvchilar QR-kod orqali ulanadi, jamoani tanlaydi va telefonidan javob beradi.",
@@ -165,6 +178,13 @@ export const t = {
     redVector: "Qizil vektor",
     joinIntro:
       "Bemalol ulang: ekran ixchamlashtirildi va javoblar kichik telefonlarda ham qulay joylashadi.",
+    chooseTeam: "Jamoani tanlang",
+    chooseTeamText: "Kirishdan keyin faqat bo'sh tomon tanlanadi: agar ko'k band bo'lsa, qizilni tanlang.",
+    teamBusy: "Bu jamoa allaqachon band",
+    teamFree: "Kirish uchun bo'sh",
+    enterBlue: "Ko'klar safida kirish",
+    enterRed: "Qizillar safida kirish",
+    teamBusyShort: "band",
     assembleTeam: "Jamoani yig'ing",
     assembleText:
       "Avval jamoa obrazini tanlang, keyin ishtirokchilarni tez kiriting va tayyorlikni belgilang.",
@@ -184,8 +204,6 @@ export const t = {
     countingOnScreen: "Katta ekranda hisob-kitob ketmoqda…",
     gameFinished: "O'yin tugadi. Yakuniy natijani o'qituvchi ekranida ko'ring.",
     rating: "Reyting",
-    tipDirectory:
-      "Maslahat: o'qituvchi sinflarni oldindan «Ma'lumotnoma» bo'limida to'ldirishi mumkin.",
     teacherTitle: "Sinflar va F.I.Sh. ma'lumotnomasi",
     teacherText:
       "O'qituvchi ro'yxatni oldindan to'ldiradi. Telefonlarda o'quvchilar sinfni tanlab, familiyalarni bir bosishda qo'shishi mumkin.",
@@ -207,8 +225,10 @@ export const t = {
     points: "ball",
     arenaTitle: "Sinf uchun ekran",
     arenaText:
-      "Ko'k va qizil jamoa uchun ikkita QR-kod. Ekran yanada yorqin va tushunarli qilindi: bolalar jamoa holatini, personajni va g'alaba lahzalarini osonroq ko'radi.",
+      "Bitta QR-kod jamoa tanlash ekraniga olib kiradi. Bir tomon band bo'lsa, ikkinchi jamoaga faqat bo'sh tomon qoladi.",
     waitQr: "QR orqali ulanish kutilmoqda",
+    oneQrTitle: "Kirish uchun bitta QR",
+    scanQrText: "O'quvchilar kodni skaner qiladi va ichkarida bo'sh jamoani tanlaydi.",
     onlineFilling: "Onlayn — anketa to'ldirilmoqda",
     onlineReady: "Onlayn va startga tayyor",
     blueAnswered: "Ko'klar javob berdi!",

@@ -23,39 +23,34 @@ export function HomePage() {
   }
 
   return (
-    <div className="page">
-      <div className="card">
-        <div className="hero-panel">
-          <div style={{ display: "flex", justifyContent: "center" }}>
-            <AiRobotMascot mood="happy" size={148} />
-          </div>
-          <div>
-            <div className="hero-kicker">{copy.homeKicker}</div>
-            <h1 className="hero-title">{copy.homeTitle}</h1>
-            <p className="hero-text">{copy.homeText}</p>
-          </div>
-        </div>
+    <div className="page page--home">
+      <Link to="/teacher" className="home-settings" aria-label={copy.teacherSettings}>
+        ⚙
+      </Link>
 
-        <div className="home-actions">
-          <button
-            type="button"
-            className="btn btn-primary"
-            disabled={loading}
-            onClick={() => void createRoom()}
-          >
-            {loading ? copy.creatingRoom : copy.createRoom}
-          </button>
-          <Link to="/teacher" className="btn btn-ghost" style={{ textDecoration: "none" }}>
-            {copy.teacherDirectory}
-          </Link>
-          <Link to="/ratings" className="btn btn-ghost" style={{ textDecoration: "none" }}>
-            {copy.rankingsTitleLink}
-          </Link>
+      <div className="home-hero">
+        <div className="home-hero__mascot">
+          <AiRobotMascot mood="happy" size={236} />
         </div>
+        <div className="home-hero__content">
+          <div className="hero-kicker">{copy.homeKicker}</div>
+          <h1 className="hero-title">{copy.homeTitle}</h1>
+          <p className="hero-text">{copy.homeText}</p>
+        </div>
+      </div>
 
-        <p style={{ marginTop: "1.2rem", fontSize: "0.95rem", color: "var(--muted)" }}>
-          {copy.homeFooter}
-        </p>
+      <div className="home-actions home-actions--center">
+        <button
+          type="button"
+          className="home-tile home-tile--primary"
+          disabled={loading}
+          onClick={() => void createRoom()}
+        >
+          <span className="home-tile__title">{loading ? copy.creatingRoom : copy.startShort}</span>
+        </button>
+        <Link to="/ratings" className="home-tile home-tile--ghost">
+          <span className="home-tile__title">{copy.rankingShort}</span>
+        </Link>
       </div>
     </div>
   );

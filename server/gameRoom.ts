@@ -92,7 +92,14 @@ export class GameRoom {
     return VECTOR_QUESTIONS[this.inner.questionIndex] ?? null;
   }
 
+  isTeamAvailable(team: TeamId): boolean {
+    return team === "blue" ? !this.inner.blue.connected : !this.inner.red.connected;
+  }
+
   connectTeam(socketId: string, team: TeamId): GamePublicState {
+    if (!this.isTeamAvailable(team)) {
+      throw new Error("Команда уже занята");
+    }
     this.inner.sockets.set(socketId, team);
     if (team === "blue") {
       this.inner.blue.connected = true;

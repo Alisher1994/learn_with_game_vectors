@@ -67,6 +67,7 @@ export function App() {
       <Routes>
         <Route path="/" element={<HomePage />} />
         <Route path="/host/:roomId" element={<HostPage />} />
+        <Route path="/join/:roomId" element={<JoinPage />} />
         <Route path="/join/:roomId/:team" element={<JoinPage />} />
         <Route path="/teacher" element={<TeacherPage />} />
         <Route path="/ratings" element={<RankingsPage />} />

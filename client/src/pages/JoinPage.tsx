@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import { Link, useParams } from "react-router-dom";
+import { Link, useNavigate, useParams } from "react-router-dom";
 import { io, Socket } from "socket.io-client";
 import type { ClassEntry, GamePublicState, TeamId } from "@shared/types";
 import { VECTOR_QUESTIONS } from "@shared/questions";
@@ -13,13 +13,15 @@ function isTeam(s: string | undefined): s is TeamId {
 
 export function JoinPage() {
   const { roomId = "", team: teamParam } = useParams();
+  const nav = useNavigate();
   const { lang } = useI18n();
   const copy = t[lang];
-  const team = isTeam(teamParam) ? teamParam : "blue";
+  const team = isTeam(teamParam) ? teamParam : null;
   const socketUrl = getSocketUrl();
   const socketRef = useRef<Socket | null>(null);
 
   const [state, setState] = useState<GamePublicState | null>(null);
+  const [joinError, setJoinError] = useState("");
   const [classes, setClasses] = useState<ClassEntry[]>([]);
   const [className, setClassName] = useState("");
   const [groupLabel, setGroupLabel] = useState(
@@ -76,7 +78,15 @@ export function JoinPage() {
     socketRef.current = s;
     canEmitRef.current = false;
     s.on("connect", () => {
-      s.emit("join", { roomId, team }, () => {
+      if (!team) {
+        s.emit("watch", { roomId });
+        return;
+      }
+      s.emit("join", { roomId, team }, (err?: string) => {
+        if (err) {
+          setJoinError(err);
+          return;
+        }
         canEmitRef.current = true;
         emitUpdate();
       });
@@ -137,10 +147,60 @@ export function JoinPage() {
     socketRef.current?.emit("answer", { choiceIndex: i });
   }
 
-  if (!isTeam(teamParam)) {
+  if (teamParam && !isTeam(teamParam)) {
     return (
       <div className="page">
         <div className="card">{copy.teamInvalidLink}</div>
+      </div>
+    );
+  }
+
+  if (!team) {
+    const blueBusy = Boolean(state?.blue.connected);
+    const redBusy = Boolean(state?.red.connected);
+
+    return (
+      <div className="page">
+        <div className="join-shell">
+          <div className="card join-stage">
+            <div className="join-header">
+              <div style={{ display: "flex", justifyContent: "center" }}>
+                <AiRobotMascot mood="happy" size={132} />
+              </div>
+              <div>
+                <h1 style={{ margin: 0, fontSize: "1.8rem" }}>{copy.chooseTeam}</h1>
+                <p style={{ margin: "0.35rem 0 0", color: "var(--muted)", lineHeight: 1.5 }}>
+                  {copy.chooseTeamText}
+                </p>
+                <div className="join-chip">{copy.room} {roomId}</div>
+              </div>
+            </div>
+          </div>
+
+          <div className="team-pick-grid">
+            <button
+              type="button"
+              className="team-pick team-pick--blue"
+              disabled={blueBusy}
+              onClick={() => nav(`/join/${roomId}/blue`)}
+            >
+              <span className="team-pick__title">{copy.blueTeam}</span>
+              <span className="team-pick__state">{blueBusy ? copy.teamBusyShort : copy.teamFree}</span>
+              <span className="team-pick__cta">{blueBusy ? copy.teamBusy : copy.enterBlue}</span>
+            </button>
+
+            <button
+              type="button"
+              className="team-pick team-pick--red"
+              disabled={redBusy}
+              onClick={() => nav(`/join/${roomId}/red`)}
+            >
+              <span className="team-pick__title">{copy.redTeam}</span>
+              <span className="team-pick__state">{redBusy ? copy.teamBusyShort : copy.teamFree}</span>
+              <span className="team-pick__cta">{redBusy ? copy.teamBusy : copy.enterRed}</span>
+            </button>
+          </div>
+        </div>
       </div>
     );
   }
@@ -318,9 +378,9 @@ export function JoinPage() {
           </div>
         )}
 
-        <p style={{ fontSize: "0.85rem", color: "var(--muted)", margin: 0 }}>
-          {copy.tipDirectory}
-        </p>
+        {joinError ? (
+          <p style={{ fontSize: "0.9rem", color: "var(--red)", margin: 0 }}>{joinError}</p>
+        ) : null}
       </div>
     </div>
   );
