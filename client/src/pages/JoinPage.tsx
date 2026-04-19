@@ -6,12 +6,15 @@ import { VECTOR_QUESTIONS } from "@shared/questions";
 import { TEAM_AVATARS } from "../data/avatars";
 import { AiRobotMascot } from "../components/AiRobotMascot";
 import { api, getSocketUrl, SOCKET_OPTIONS } from "../socketUrl";
+import { getQuestionCopy, t, useI18n } from "../i18n";
 function isTeam(s: string | undefined): s is TeamId {
   return s === "blue" || s === "red";
 }
 
 export function JoinPage() {
   const { roomId = "", team: teamParam } = useParams();
+  const { lang } = useI18n();
+  const copy = t[lang];
   const team = isTeam(teamParam) ? teamParam : "blue";
   const socketUrl = getSocketUrl();
   const socketRef = useRef<Socket | null>(null);
@@ -20,7 +23,7 @@ export function JoinPage() {
   const [classes, setClasses] = useState<ClassEntry[]>([]);
   const [className, setClassName] = useState("");
   const [groupLabel, setGroupLabel] = useState(
-    team === "blue" ? "Синий вектор" : "Красный вектор",
+    team === "blue" ? copy.blueVector : copy.redVector,
   );
   const [members, setMembers] = useState<string[]>([""]);
   const [avatarId, setAvatarId] = useState<string | null>(null);
@@ -104,9 +107,10 @@ export function JoinPage() {
     if (!state || state.phase !== "playing") return null;
     return VECTOR_QUESTIONS[state.questionIndex] ?? null;
   }, [state]);
+  const qCopy = useMemo(() => (q ? getQuestionCopy(q, lang) : null), [q, lang]);
 
   const teamColor = team === "blue" ? "var(--blue)" : "var(--red)";
-  const teamLabel = team === "blue" ? "Синие" : "Красные";
+  const teamLabel = team === "blue" ? copy.blueTeam : copy.redTeam;
 
   function addMember() {
     setMembers((m) => [...m, ""]);
@@ -136,7 +140,7 @@ export function JoinPage() {
   if (!isTeam(teamParam)) {
     return (
       <div className="page">
-        <div className="card">Неверная ссылка команды.</div>
+        <div className="card">{copy.teamInvalidLink}</div>
       </div>
     );
   }
@@ -154,23 +158,19 @@ export function JoinPage() {
                 {teamLabel}
               </h1>
               <p style={{ margin: "0.35rem 0 0", color: "var(--muted)", lineHeight: 1.5 }}>
-                Подключайтесь спокойно: экран стал компактнее, а ответы
-                помещаются удобнее даже на небольшом телефоне.
+                {copy.joinIntro}
               </p>
-              <div className="join-chip">Комната {roomId}</div>
+              <div className="join-chip">{copy.room} {roomId}</div>
             </div>
           </div>
         </div>
 
         {state?.phase === "lobby" && (
           <div className="card">
-            <h2 className="join-card-title">Соберите команду</h2>
-            <p className="join-card-subtitle">
-              Сначала выберите образ команды, затем быстро заполните участников и
-              нажмите готовность.
-            </p>
+            <h2 className="join-card-title">{copy.assembleTeam}</h2>
+            <p className="join-card-subtitle">{copy.assembleText}</p>
 
-            <label className="label">Аватар команды</label>
+            <label className="label">{copy.teamAvatar}</label>
             <div className="avatar-grid">
               {TEAM_AVATARS.map((a) => (
                 <button
@@ -192,17 +192,17 @@ export function JoinPage() {
 
             {classes.length > 0 && (
               <>
-                <label className="label">Класс из справочника</label>
+                <label className="label">{copy.classFromDirectory}</label>
                 <select
                   className="input"
                   value={pickedClassId}
                   onChange={(e) => applyClassFromList(e.target.value)}
                   style={{ marginBottom: "0.75rem" }}
                 >
-                  <option value="">— выбрать —</option>
+                  <option value="">{copy.choose}</option>
                   {classes.map((c) => (
                     <option key={c.id} value={c.id}>
-                      {c.name} ({c.students.length} уч.)
+                      {c.name} ({c.students.length} {copy.studentsShort})
                     </option>
                   ))}
                 </select>
@@ -211,7 +211,7 @@ export function JoinPage() {
 
             <div className="join-grid">
               <div>
-                <label className="label">Класс</label>
+                <label className="label">{copy.classLabel}</label>
                 <input
                   className="input"
                   value={className}
@@ -222,7 +222,7 @@ export function JoinPage() {
               </div>
 
               <div>
-                <label className="label">Название группы</label>
+                <label className="label">{copy.groupName}</label>
                 <input
                   className="input"
                   value={groupLabel}
@@ -232,7 +232,7 @@ export function JoinPage() {
               </div>
             </div>
 
-            <label className="label">Участники</label>
+            <label className="label">{copy.members}</label>
             <div className="member-list">
               {members.map((m, i) => (
                 <input
@@ -240,12 +240,12 @@ export function JoinPage() {
                   className="input"
                   value={m}
                   onChange={(e) => setMember(i, e.target.value)}
-                  placeholder={`Ученик ${i + 1}`}
+                  placeholder={copy.memberPlaceholder(i + 1)}
                 />
               ))}
             </div>
             <button type="button" className="btn btn-ghost" onClick={addMember} style={{ marginTop: "0.65rem" }}>
-              + Добавить участника
+              {copy.addMember}
             </button>
 
             <label className="join-ready">
@@ -255,24 +255,24 @@ export function JoinPage() {
                 onChange={(e) => setReady(e.target.checked)}
               />
               <span>
-                <strong style={{ display: "block", marginBottom: 4 }}>Мы готовы</strong>
-                Можно начинать, когда подключится вторая команда.
+                <strong style={{ display: "block", marginBottom: 4 }}>{copy.readyTitle}</strong>
+                {copy.readyText}
               </span>
             </label>
           </div>
         )}
 
-        {state && state.phase === "playing" && q && (
+        {state && state.phase === "playing" && q && qCopy && (
           <div className="card quiz-shell">
             <div className="quiz-topline">
               <div className="quiz-step">
-                Вопрос {state.questionIndex + 1} из {VECTOR_QUESTIONS.length}
+                {copy.questionOf(state.questionIndex + 1, VECTOR_QUESTIONS.length)}
               </div>
               <div style={{ color: teamColor, fontWeight: 800 }}>{groupLabel}</div>
             </div>
-            <h2 className="quiz-question">{q.text}</h2>
+            <h2 className="quiz-question">{qCopy.text}</h2>
             <div className="quiz-options">
-              {q.options.map((opt, i) => {
+              {qCopy.options.map((opt, i) => {
                 const mine =
                   team === "blue"
                     ? state.blue.currentAnswer
@@ -298,28 +298,28 @@ export function JoinPage() {
               })}
             </div>
             {(team === "blue" ? state.blue : state.red).currentAnswer !== null && (
-              <p className="quiz-status">Ответ отправлен. Ждём вторую команду…</p>
+              <p className="quiz-status">{copy.answerSent}</p>
             )}
           </div>
         )}
 
         {state && state.phase === "between" && (
           <div className="card">
-            <p style={{ margin: 0 }}>Идёт подсчёт на большом экране…</p>
+            <p style={{ margin: 0 }}>{copy.countingOnScreen}</p>
           </div>
         )}
 
         {state && state.phase === "finished" && (
           <div className="card" style={{ textAlign: "center" }}>
-            <p>Игра окончена. Смотрите итог на экране учителя.</p>
+            <p>{copy.gameFinished}</p>
             <Link to="/ratings" className="btn btn-ghost" style={{ marginTop: "0.75rem" }}>
-              Рейтинг
+              {copy.rating}
             </Link>
           </div>
         )}
 
         <p style={{ fontSize: "0.85rem", color: "var(--muted)", margin: 0 }}>
-          Подсказка: учитель может заранее заполнить классы в разделе «Справочник».
+          {copy.tipDirectory}
         </p>
       </div>
     </div>

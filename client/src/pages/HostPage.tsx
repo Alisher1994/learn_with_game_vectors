@@ -11,6 +11,7 @@ import { HOST_LOTTIE } from "../data/hostLottiePaths";
 import { DotLottieReact } from "@lottiefiles/dotlottie-react";
 import { TEAM_AVATARS } from "../data/avatars";
 import { api, getSocketUrl, SOCKET_OPTIONS } from "../socketUrl";
+import { getQuestionCopy, t, type Lang, useI18n } from "../i18n";
 
 const MAX_POINTS_CAP = VECTOR_QUESTIONS.length * 15;
 
@@ -22,17 +23,20 @@ function FightHud({
   scores,
   questionIndex,
   phase,
+  lang,
 }: {
   scores: { blue: number; red: number };
   questionIndex: number;
   phase: GamePublicState["phase"];
+  lang: Lang;
 }) {
+  const copy = t[lang];
   const bp = fightBarPercent(scores.blue);
   const rp = fightBarPercent(scores.red);
   const roundLabel =
     phase === "finished"
-      ? "Игра окончена"
-      : `Раунд ${questionIndex + 1} / ${VECTOR_QUESTIONS.length}`;
+      ? copy.gameOver
+      : copy.roundOf(questionIndex + 1, VECTOR_QUESTIONS.length);
 
   return (
     <div className="fight-hud">
@@ -54,7 +58,8 @@ function FightHud({
   );
 }
 
-function AnswerArenaStrip({ state }: { state: GamePublicState }) {
+function AnswerArenaStrip({ state, lang }: { state: GamePublicState; lang: Lang }) {
+  const copy = t[lang];
   const b = state.blue.currentAnswer;
   const r = state.red.currentAnswer;
   if (b !== null && r !== null) return null;
@@ -73,10 +78,10 @@ function AnswerArenaStrip({ state }: { state: GamePublicState }) {
         ].join(" ")}
       >
         <div className="answer-arena__big team-blue">
-          {blueDone ? "Синие ответили!" : "Синие…"}
+          {blueDone ? copy.blueAnswered : copy.blueWaiting}
         </div>
         <div className="answer-arena__sub">
-          {blueDone ? (redDone ? "" : "Ждём красных") : "ожидание ответа"}
+          {blueDone ? (redDone ? "" : copy.waitRed) : copy.waitingAnswer}
         </div>
         {!blueDone && redDone ? <HostWaitAstronaut /> : null}
       </div>
@@ -87,10 +92,10 @@ function AnswerArenaStrip({ state }: { state: GamePublicState }) {
         ].join(" ")}
       >
         <div className="answer-arena__big team-red">
-          {redDone ? "Красные ответили!" : "Красные…"}
+          {redDone ? copy.redAnswered : copy.redWaiting}
         </div>
         <div className="answer-arena__sub">
-          {redDone ? (blueDone ? "" : "Ждём синих") : "ожидание ответа"}
+          {redDone ? (blueDone ? "" : copy.waitBlue) : copy.waitingAnswer}
         </div>
         {blueDone && !redDone ? <HostWaitAstronaut /> : null}
       </div>
@@ -120,6 +125,7 @@ function TeamLobbyBlock({
   joinBase,
   qrDataUrl,
   team,
+  lang,
 }: {
   title: string;
   colorVar: string;
@@ -127,7 +133,9 @@ function TeamLobbyBlock({
   joinBase: string;
   qrDataUrl: string;
   team: TeamState | undefined;
+  lang: Lang;
 }) {
+  const copy = t[lang];
   const connected = team?.connected ?? false;
   const ready = team?.ready ?? false;
   const showQr = !connected || !ready;
@@ -160,7 +168,9 @@ function TeamLobbyBlock({
             <div style={{ fontSize: "6.5rem", lineHeight: 1 }}>
               {team?.avatarId ? avatarEmoji(team.avatarId) : "👥"}
             </div>
-            <div style={{ marginTop: 8, fontWeight: 800, color: "var(--ok)" }}>Готовы ✓</div>
+            <div style={{ marginTop: 8, fontWeight: 800, color: "var(--ok)" }}>
+              {copy.readyShort}
+            </div>
             {team?.groupLabel ? (
               <div style={{ marginTop: 6, fontSize: "0.95rem", color: "var(--muted)" }}>
                 {team.groupLabel}
@@ -175,13 +185,9 @@ function TeamLobbyBlock({
       </div>
 
       <div style={{ marginTop: 10, fontSize: "0.95rem" }}>
-        {!connected && <span style={{ color: "var(--muted)" }}>Ждём подключения по QR</span>}
-        {connected && !ready && (
-          <span style={{ color: "var(--warn)" }}>Онлайн — заполняют анкету</span>
-        )}
-        {connected && ready && (
-          <span style={{ color: "var(--ok)" }}>Онлайн и готовы к старту</span>
-        )}
+        {!connected && <span style={{ color: "var(--muted)" }}>{copy.waitQr}</span>}
+        {connected && !ready && <span style={{ color: "var(--warn)" }}>{copy.onlineFilling}</span>}
+        {connected && ready && <span style={{ color: "var(--ok)" }}>{copy.onlineReady}</span>}
       </div>
     </div>
   );
@@ -189,6 +195,8 @@ function TeamLobbyBlock({
 
 export function HostPage() {
   const { roomId = "" } = useParams();
+  const { lang } = useI18n();
+  const copy = t[lang];
   const [state, setState] = useState<GamePublicState | null>(null);
   const [qrBlue, setQrBlue] = useState("");
   const [qrRed, setQrRed] = useState("");
@@ -208,12 +216,8 @@ export function HostPage() {
 
   useEffect(() => {
     if (!joinBase) return;
-    void QRCode.toDataURL(`${joinBase}/blue`, { margin: 1, width: 220 }).then(
-      setQrBlue,
-    );
-    void QRCode.toDataURL(`${joinBase}/red`, { margin: 1, width: 220 }).then(
-      setQrRed,
-    );
+    void QRCode.toDataURL(`${joinBase}/blue`, { margin: 1, width: 220 }).then(setQrBlue);
+    void QRCode.toDataURL(`${joinBase}/red`, { margin: 1, width: 220 }).then(setQrRed);
   }, [joinBase]);
 
   useEffect(() => {
@@ -233,9 +237,9 @@ export function HostPage() {
     state != null && state.questionIndex < VECTOR_QUESTIONS.length
       ? VECTOR_QUESTIONS[state.questionIndex]
       : null;
+  const qCopy = useMemo(() => (q ? getQuestionCopy(q, lang) : null), [q, lang]);
 
-  const bothIn =
-    state?.blue.connected && state?.red.connected && state.phase === "lobby";
+  const bothIn = state?.blue.connected && state?.red.connected && state.phase === "lobby";
   const bothReady = Boolean(state?.blue.ready && state?.red.ready);
 
   function emitStart() {
@@ -260,10 +264,10 @@ export function HostPage() {
         }}
       >
         <Link to="/" className="btn btn-ghost" style={{ textDecoration: "none" }}>
-          ← На главную
+          {copy.backHome}
         </Link>
         <span style={{ color: "var(--muted)", fontSize: "0.95rem" }}>
-          Комната: <strong style={{ color: "var(--text)" }}>{roomId}</strong>
+          {copy.room}: <strong style={{ color: "var(--text)" }}>{roomId}</strong>
         </span>
       </div>
 
@@ -272,6 +276,7 @@ export function HostPage() {
           scores={state.scores}
           questionIndex={state.questionIndex}
           phase={state.phase}
+          lang={lang}
         />
       )}
 
@@ -284,19 +289,10 @@ export function HostPage() {
             flexWrap: "wrap",
           }}
         >
-          <AiRobotMascot
-            mood={state?.phase === "finished" ? "win" : "happy"}
-            size={144}
-          />
+          <AiRobotMascot mood={state?.phase === "finished" ? "win" : "happy"} size={144} />
           <div>
-            <h2 style={{ margin: "0 0 0.25rem", fontSize: "1.6rem" }}>
-              Экран для класса
-            </h2>
-            <p style={{ margin: 0, color: "var(--muted)", lineHeight: 1.5 }}>
-              Два QR-кода для синей и красной команды. Экран сделан ярче и
-              понятнее: детям легче считать статус команд, персонажа и моменты
-              победы.
-            </p>
+            <h2 style={{ margin: "0 0 0.25rem", fontSize: "1.6rem" }}>{copy.arenaTitle}</h2>
+            <p style={{ margin: 0, color: "var(--muted)", lineHeight: 1.5 }}>{copy.arenaText}</p>
           </div>
         </div>
 
@@ -310,20 +306,22 @@ export function HostPage() {
           }}
         >
           <TeamLobbyBlock
-            title="Синие"
+            title={copy.blueTeam}
             colorVar="var(--blue)"
             joinSuffix="blue"
             joinBase={joinBase}
             qrDataUrl={qrBlue}
             team={state?.blue}
+            lang={lang}
           />
           <TeamLobbyBlock
-            title="Красные"
+            title={copy.redTeam}
             colorVar="var(--red)"
             joinSuffix="red"
             joinBase={joinBase}
             qrDataUrl={qrRed}
             team={state?.red}
+            lang={lang}
           />
         </div>
 
@@ -338,20 +336,20 @@ export function HostPage() {
           }}
         >
           <span>
-            Синие:{" "}
+            {copy.blueStatus}:{" "}
             <strong className="team-blue">
-              {!state?.blue.connected ? "ждём в сети" : state.blue.ready ? "готовы ✓" : "онлайн"}
+              {!state?.blue.connected ? copy.waitingOnline : state.blue.ready ? copy.readyShort : copy.online}
             </strong>
           </span>
           <span>
-            Красные:{" "}
+            {copy.redStatus}:{" "}
             <strong className="team-red">
-              {!state?.red.connected ? "ждём в сети" : state.red.ready ? "готовы ✓" : "онлайн"}
+              {!state?.red.connected ? copy.waitingOnline : state.red.ready ? copy.readyShort : copy.online}
             </strong>
           </span>
           {bothIn && !bothReady && (
             <span style={{ color: "var(--muted)", width: "100%", textAlign: "center" }}>
-              Дождитесь, пока обе команды отметят «Мы готовы» — или начните, когда будете уверены.
+              {copy.waitReady}
             </span>
           )}
         </div>
@@ -363,20 +361,20 @@ export function HostPage() {
             style={{ marginTop: "1rem", width: "100%" }}
             onClick={() => emitStart()}
           >
-            Начать игру
-            {bothReady ? "" : " (можно и до «готовы» у всех)"}
+            {copy.startGame}
+            {bothReady ? "" : copy.maybeBeforeReady}
           </button>
         )}
       </div>
 
       {state && state.phase !== "lobby" && (
         <div className="card host-game-card" style={{ marginBottom: "1rem" }}>
-          {state.phase === "playing" && q && (
+          {state.phase === "playing" && qCopy && (
             <>
-              <AnswerArenaStrip state={state} />
-              <h3 className="host-question">{q.text}</h3>
+              <AnswerArenaStrip state={state} lang={lang} />
+              <h3 className="host-question">{qCopy.text}</h3>
               <ul className="host-options">
-                {q.options.map((o, i) => (
+                {qCopy.options.map((o, i) => (
                   <li key={i}>
                     <span className="host-options__letter">{String.fromCharCode(65 + i)}.</span>{" "}
                     {o}
@@ -386,21 +384,22 @@ export function HostPage() {
             </>
           )}
 
-          {state.phase === "between" && state.lastReveal && q && (
+          {state.phase === "between" && state.lastReveal && qCopy && (
             <div style={{ position: "relative", minHeight: 280 }}>
               <HostConfettiLottie side={confettiSideFromReveal(state.lastReveal)} />
-              <AnswerArenaStrip state={state} />
+              <AnswerArenaStrip state={state} lang={lang} />
               <div className="host-correct-box">
-                <div className="host-correct-box__label">Верный вариант</div>
+                <div className="host-correct-box__label">{copy.correctOption}</div>
                 <div className="host-correct-box__text">
                   {String.fromCharCode(65 + state.lastReveal.correctIndex)}.{" "}
-                  {q.options[state.lastReveal.correctIndex]}
+                  {qCopy.options[state.lastReveal.correctIndex]}
                 </div>
               </div>
               <RevealShowcase
                 last={state.lastReveal}
                 labels={{ blue: state.blue.groupLabel, red: state.red.groupLabel }}
-                options={q.options}
+                options={qCopy.options}
+                lang={lang}
               />
               <button
                 type="button"
@@ -408,7 +407,7 @@ export function HostPage() {
                 style={{ marginTop: "1rem", width: "100%", fontSize: "clamp(1rem, 2vw, 1.25rem)" }}
                 onClick={() => emitNext()}
               >
-                Следующий вопрос
+                {copy.nextQuestion}
               </button>
             </div>
           )}
@@ -431,21 +430,15 @@ export function HostPage() {
                   <AiRobotMascot mood="win" size={176} />
                 </div>
                 <h3 className="winner-stage__title">
-                  {state.winner === "draw" && "Ничья!"}
+                  {state.winner === "draw" && copy.draw}
                   {state.winner === "blue" && (
                     <>
-                      Победили:{" "}
-                      <span className="team-blue">
-                        {state.blue.groupLabel || "Синие"}
-                      </span>
+                      {copy.winners} <span className="team-blue">{state.blue.groupLabel || copy.blueTeam}</span>
                     </>
                   )}
                   {state.winner === "red" && (
                     <>
-                      Победили:{" "}
-                      <span className="team-red">
-                        {state.red.groupLabel || "Красные"}
-                      </span>
+                      {copy.winners} <span className="team-red">{state.red.groupLabel || copy.redTeam}</span>
                     </>
                   )}
                 </h3>
@@ -454,9 +447,7 @@ export function HostPage() {
                   <span style={{ color: "var(--muted)", margin: "0 0.5rem" }}>:</span>
                   <span className="team-red">{state.scores.red}</span>
                 </p>
-                <p className="winner-stage__note">
-                  Результаты сохранены в таблице рейтингов.
-                </p>
+                <p className="winner-stage__note">{copy.rankingSaved}</p>
                 <div className="host-trophy-wrap">
                   <DotLottieReact
                     src={HOST_LOTTIE.trophy}
@@ -474,7 +465,7 @@ export function HostPage() {
                   className="btn btn-ghost"
                   style={{ marginTop: "0.75rem", display: "inline-flex" }}
                 >
-                  Открыть рейтинг
+                  {copy.openRanking}
                 </Link>
               </div>
             </div>
@@ -489,11 +480,14 @@ function RevealShowcase({
   last,
   labels,
   options,
+  lang,
 }: {
   last: NonNullable<GamePublicState["lastReveal"]>;
   labels: { blue: string; red: string };
   options: string[];
+  lang: Lang;
 }) {
+  const copy = t[lang];
   const rows: {
     team: TeamId;
     label: string;
@@ -501,29 +495,28 @@ function RevealShowcase({
     ok: boolean;
     pts: number;
     choiceIndex: number | null;
-  }[] =
-    [
-      {
-        team: "blue",
-        label: labels.blue || "Синие",
-        time: last.blueTimeSec,
-        ok: last.blueCorrect,
-        pts: last.pointsBlue,
-        choiceIndex: last.blueChoiceIndex,
-      },
-      {
-        team: "red",
-        label: labels.red || "Красные",
-        time: last.redTimeSec,
-        ok: last.redCorrect,
-        pts: last.pointsRed,
-        choiceIndex: last.redChoiceIndex,
-      },
-    ].sort((a, b) => {
-      if (a.time == null) return 1;
-      if (b.time == null) return -1;
-      return a.time - b.time;
-    });
+  }[] = [
+    {
+      team: "blue",
+      label: labels.blue || copy.blueTeam,
+      time: last.blueTimeSec,
+      ok: last.blueCorrect,
+      pts: last.pointsBlue,
+      choiceIndex: last.blueChoiceIndex,
+    },
+    {
+      team: "red",
+      label: labels.red || copy.redTeam,
+      time: last.redTimeSec,
+      ok: last.redCorrect,
+      pts: last.pointsRed,
+      choiceIndex: last.redChoiceIndex,
+    },
+  ].sort((a, b) => {
+    if (a.time == null) return 1;
+    if (b.time == null) return -1;
+    return a.time - b.time;
+  });
 
   return (
     <div className="result-showcase">
@@ -551,35 +544,31 @@ function RevealShowcase({
                   <span
                     className={`reveal-badge ${r.ok ? "reveal-badge--ok" : "reveal-badge--miss"}`}
                   >
-                    {r.ok ? "Верно" : "Ошибка"}
+                    {r.ok ? copy.correct : copy.wrong}
                   </span>
-                  {isFastest && (
-                    <span className="reveal-badge reveal-badge--fast">
-                      Самые быстрые
-                    </span>
-                  )}
+                  {isFastest && <span className="reveal-badge reveal-badge--fast">{copy.fastest}</span>}
                 </div>
               </div>
 
               <div className="reveal-stat-grid">
                 <div className="reveal-stat">
-                  <span className="reveal-stat__label">Время</span>
+                  <span className="reveal-stat__label">{copy.time}</span>
                   <span className="reveal-stat__value">
                     {r.time != null ? `${r.time.toFixed(2)} c` : "—"}
                   </span>
                 </div>
                 <div className="reveal-stat">
-                  <span className="reveal-stat__label">Очки</span>
+                  <span className="reveal-stat__label">{copy.score}</span>
                   <span className="reveal-stat__value">+{r.pts}</span>
                 </div>
               </div>
 
               <div className="reveal-choice">
-                <span className="reveal-choice__label">Выбранный ответ</span>
+                <span className="reveal-choice__label">{copy.chosenAnswer}</span>
                 <span className="reveal-choice__value">
                   {r.choiceIndex != null
                     ? `${String.fromCharCode(65 + r.choiceIndex)}. ${options[r.choiceIndex] ?? "—"}`
-                    : "Ответ не выбран"}
+                    : copy.noAnswer}
                 </span>
               </div>
             </div>

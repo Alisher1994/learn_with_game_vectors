@@ -2,10 +2,13 @@ import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { AiRobotMascot } from "../components/AiRobotMascot";
 import { api } from "../socketUrl";
+import { t, useI18n } from "../i18n";
 
 export function HomePage() {
   const nav = useNavigate();
   const [loading, setLoading] = useState(false);
+  const { lang } = useI18n();
+  const copy = t[lang];
 
   async function createRoom() {
     setLoading(true);
@@ -27,13 +30,9 @@ export function HomePage() {
             <AiRobotMascot mood="happy" size={148} />
           </div>
           <div>
-            <div className="hero-kicker">Игровая викторина для класса</div>
-            <h1 className="hero-title">Вектор-баттл</h1>
-            <p className="hero-text">
-              Яркая математическая игра для детей: две команды, быстрые ответы,
-              большой экран, дружелюбный персонаж и понятные подсказки без
-              перегруза.
-            </p>
+            <div className="hero-kicker">{copy.homeKicker}</div>
+            <h1 className="hero-title">{copy.homeTitle}</h1>
+            <p className="hero-text">{copy.homeText}</p>
           </div>
         </div>
 
@@ -44,19 +43,18 @@ export function HomePage() {
             disabled={loading}
             onClick={() => void createRoom()}
           >
-            {loading ? "Создаём комнату…" : "Новая игра (экран учителя)"}
+            {loading ? copy.creatingRoom : copy.createRoom}
           </button>
           <Link to="/teacher" className="btn btn-ghost" style={{ textDecoration: "none" }}>
-            Справочник классов и ФИО (заранее)
+            {copy.teacherDirectory}
           </Link>
           <Link to="/ratings" className="btn btn-ghost" style={{ textDecoration: "none" }}>
-            Таблица рейтингов
+            {copy.rankingsTitleLink}
           </Link>
         </div>
 
         <p style={{ marginTop: "1.2rem", fontSize: "0.95rem", color: "var(--muted)" }}>
-          Ученики подключаются по QR-коду, выбирают команду и отвечают прямо со
-          своих телефонов.
+          {copy.homeFooter}
         </p>
       </div>
     </div>

@@ -3,11 +3,14 @@ import { Link } from "react-router-dom";
 import { nanoid } from "nanoid";
 import type { ClassEntry } from "@shared/types";
 import { api } from "../socketUrl";
+import { t, useI18n } from "../i18n";
 
 export function TeacherPage() {
   const [classes, setClasses] = useState<ClassEntry[]>([]);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
+  const { lang } = useI18n();
+  const copy = t[lang];
 
   useEffect(() => {
     void api<ClassEntry[]>("/api/classes")
@@ -31,7 +34,7 @@ export function TeacherPage() {
   function addClass() {
     setClasses((c) => [
       ...c,
-      { id: nanoid(10), name: "Новый класс", students: [""] },
+      { id: nanoid(10), name: copy.newClass, students: [""] },
     ]);
   }
 
@@ -77,7 +80,7 @@ export function TeacherPage() {
   if (loading) {
     return (
       <div className="page">
-        <div className="card">Загрузка…</div>
+        <div className="card">{copy.loading}</div>
       </div>
     );
   }
@@ -86,18 +89,13 @@ export function TeacherPage() {
     <div className="page">
       <div className="row" style={{ marginBottom: "1rem" }}>
         <Link to="/" className="btn btn-ghost" style={{ textDecoration: "none" }}>
-          ← На главную
+          {copy.backHome}
         </Link>
       </div>
 
       <div className="card">
-        <h1 style={{ marginTop: 0, fontSize: "1.35rem" }}>
-          Справочник классов и ФИО
-        </h1>
-        <p style={{ color: "var(--muted)", marginTop: 0 }}>
-          Учитель заполняет список заранее. На телефонах ученики смогут выбрать
-          класс и подставить фамилии одним нажатием.
-        </p>
+        <h1 style={{ marginTop: 0, fontSize: "1.35rem" }}>{copy.teacherTitle}</h1>
+        <p style={{ color: "var(--muted)", marginTop: 0 }}>{copy.teacherText}</p>
 
         {classes.map((cl) => (
           <div
@@ -114,7 +112,11 @@ export function TeacherPage() {
                 className="input"
                 value={cl.name}
                 onChange={(e) => updateClass(cl.id, e.target.value)}
-                placeholder="Название класса (например 8А)"
+                placeholder={
+                  lang === "uz"
+                    ? "Sinf nomi (masalan 8A)"
+                    : "Название класса (например 8А)"
+                }
                 style={{ flex: 1, minWidth: 200 }}
               />
               <button
@@ -122,17 +124,17 @@ export function TeacherPage() {
                 className="btn btn-danger"
                 onClick={() => removeClass(cl.id)}
               >
-                Удалить класс
+                {copy.removeClass}
               </button>
             </div>
-            <label className="label">Ученики</label>
+            <label className="label">{copy.students}</label>
             {cl.students.map((s, i) => (
               <div key={i} className="row" style={{ marginBottom: "0.35rem" }}>
                 <input
                   className="input"
                   value={s}
                   onChange={(e) => setStudent(cl.id, i, e.target.value)}
-                  placeholder="ФИО"
+                  placeholder={copy.studentName}
                   style={{ flex: 1 }}
                 />
                 <button
@@ -149,13 +151,13 @@ export function TeacherPage() {
               className="btn btn-ghost"
               onClick={() => addStudent(cl.id)}
             >
-              + Ученик
+              {copy.addStudent}
             </button>
           </div>
         ))}
 
         <button type="button" className="btn btn-ghost" onClick={addClass}>
-          + Класс
+          {copy.addClass}
         </button>
 
         <div style={{ marginTop: "1.25rem" }}>
@@ -165,7 +167,7 @@ export function TeacherPage() {
             disabled={saving}
             onClick={() => void save()}
           >
-            {saving ? "Сохранение…" : "Сохранить"}
+            {saving ? copy.saving : copy.save}
           </button>
         </div>
       </div>

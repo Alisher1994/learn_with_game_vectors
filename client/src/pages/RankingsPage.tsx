@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { api } from "../socketUrl";
+import { t, useI18n } from "../i18n";
 
 interface RankingEntry {
   id: string;
@@ -16,6 +17,8 @@ interface RankingEntry {
 export function RankingsPage() {
   const [rows, setRows] = useState<RankingEntry[]>([]);
   const [loading, setLoading] = useState(true);
+  const { lang } = useI18n();
+  const copy = t[lang];
 
   useEffect(() => {
     void api<RankingEntry[]>("/api/rankings")
@@ -28,22 +31,18 @@ export function RankingsPage() {
     <div className="page">
       <div className="row" style={{ marginBottom: "1rem" }}>
         <Link to="/" className="btn btn-ghost" style={{ textDecoration: "none" }}>
-          ← На главную
+          {copy.backHome}
         </Link>
       </div>
 
       <div className="card">
-        <h1 style={{ marginTop: 0, fontSize: "1.8rem" }}>Зал достижений</h1>
-        <p style={{ color: "var(--muted)", marginTop: 0, lineHeight: 1.5 }}>
-          После каждой игры результат сохраняется автоматически. Вместо сухой
-          таблицы здесь теперь карточки с понятной подачей команды, очков и
-          участников.
-        </p>
+        <h1 style={{ marginTop: 0, fontSize: "1.8rem" }}>{copy.rankingsTitle}</h1>
+        <p style={{ color: "var(--muted)", marginTop: 0, lineHeight: 1.5 }}>{copy.rankingsText}</p>
 
-        {loading && <p>Загрузка…</p>}
+        {loading && <p>{copy.loading}</p>}
 
         {!loading && rows.length === 0 && (
-          <p style={{ color: "var(--muted)" }}>Пока нет записей.</p>
+          <p style={{ color: "var(--muted)" }}>{copy.noRecords}</p>
         )}
 
         {!loading && rows.length > 0 && (
@@ -61,23 +60,23 @@ export function RankingsPage() {
                       <div className="ranking-medal">{medal}</div>
                       <div>
                         <div style={{ fontSize: "1.2rem", fontWeight: 900 }}>
-                          {r.groupLabel || (r.team === "blue" ? "Синие" : "Красные")}
+                          {r.groupLabel || (r.team === "blue" ? copy.blueTeam : copy.redTeam)}
                         </div>
                         <div style={{ color: "var(--muted)", marginTop: 4 }}>
-                          {new Date(r.createdAt).toLocaleString("ru-RU")}
+                          {new Date(r.createdAt).toLocaleString(lang === "uz" ? "uz-UZ" : "ru-RU")}
                         </div>
                       </div>
                     </div>
-                    <div className="ranking-score">{r.score} очков</div>
+                    <div className="ranking-score">{r.score} {copy.points}</div>
                   </div>
 
                   <div className="ranking-meta">
                     <div className="ranking-meta__item">
-                      <span className="ranking-meta__label">Класс</span>
+                      <span className="ranking-meta__label">{copy.classWord}</span>
                       <span className="ranking-meta__value">{r.className || "—"}</span>
                     </div>
                     <div className="ranking-meta__item">
-                      <span className="ranking-meta__label">Комната</span>
+                      <span className="ranking-meta__label">{copy.roomWord}</span>
                       <span className="ranking-meta__value">{r.roomId}</span>
                     </div>
                   </div>
@@ -85,7 +84,7 @@ export function RankingsPage() {
                   <div className="ranking-members">
                     {(r.members.filter(Boolean).length
                       ? r.members.filter(Boolean)
-                      : ["Участники не указаны"]).map((member, memberIndex) => (
+                      : [copy.membersMissing]).map((member, memberIndex) => (
                       <span key={`${r.id}-${memberIndex}`} className="ranking-member">
                         {member}
                       </span>

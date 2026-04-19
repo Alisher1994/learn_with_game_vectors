@@ -12,6 +12,18 @@ export interface Question {
   options: string[];
   correctIndex: number;
   hint?: string;
+  translations?: {
+    ru?: {
+      text: string;
+      options: string[];
+      hint?: string;
+    };
+    uz?: {
+      text: string;
+      options: string[];
+      hint?: string;
+    };
+  };
 }
 
 export interface TeamState {
