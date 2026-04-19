@@ -5,6 +5,9 @@ import { AiRobotMascot } from "../components/AiRobotMascot";
 import { api } from "../socketUrl";
 import { t, useI18n } from "../i18n";
 
+const PLAY_BUTTON_LOTTIE = encodeURI("/Play button.lottie");
+const STAR_RATING_LOTTIE = encodeURI("/Star rating.lottie");
+
 export function HomePage() {
   const nav = useNavigate();
   const [loading, setLoading] = useState(false);
@@ -49,7 +52,7 @@ export function HomePage() {
         >
           <div className="home-tile__media">
             <DotLottieReact
-              src="/Play button.lottie"
+              src={PLAY_BUTTON_LOTTIE}
               loop
               autoplay
               className="home-tile__lottie"
@@ -60,7 +63,7 @@ export function HomePage() {
         <Link to="/ratings" className="home-tile home-tile--ghost">
           <div className="home-tile__media">
             <DotLottieReact
-              src="/Star rating.lottie"
+              src={STAR_RATING_LOTTIE}
               loop
               autoplay
               className="home-tile__lottie"
