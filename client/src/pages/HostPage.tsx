@@ -138,7 +138,7 @@ function TeamLobbyBlock({
       style={{
         borderRadius: 12,
         padding: "0.75rem",
-        background: "rgba(15, 20, 25, 0.35)",
+        background: "var(--surface-soft)",
         border: `1px solid ${colorVar}33`,
       }}
     >
@@ -400,6 +400,7 @@ export function HostPage() {
               <RevealShowcase
                 last={state.lastReveal}
                 labels={{ blue: state.blue.groupLabel, red: state.red.groupLabel }}
+                options={q.options}
               />
               <button
                 type="button"
@@ -487,11 +488,20 @@ export function HostPage() {
 function RevealShowcase({
   last,
   labels,
+  options,
 }: {
   last: NonNullable<GamePublicState["lastReveal"]>;
   labels: { blue: string; red: string };
+  options: string[];
 }) {
-  const rows: { team: TeamId; label: string; time: number | null; ok: boolean; pts: number }[] =
+  const rows: {
+    team: TeamId;
+    label: string;
+    time: number | null;
+    ok: boolean;
+    pts: number;
+    choiceIndex: number | null;
+  }[] =
     [
       {
         team: "blue",
@@ -499,6 +509,7 @@ function RevealShowcase({
         time: last.blueTimeSec,
         ok: last.blueCorrect,
         pts: last.pointsBlue,
+        choiceIndex: last.blueChoiceIndex,
       },
       {
         team: "red",
@@ -506,6 +517,7 @@ function RevealShowcase({
         time: last.redTimeSec,
         ok: last.redCorrect,
         pts: last.pointsRed,
+        choiceIndex: last.redChoiceIndex,
       },
     ].sort((a, b) => {
       if (a.time == null) return 1;
@@ -560,6 +572,15 @@ function RevealShowcase({
                   <span className="reveal-stat__label">Очки</span>
                   <span className="reveal-stat__value">+{r.pts}</span>
                 </div>
+              </div>
+
+              <div className="reveal-choice">
+                <span className="reveal-choice__label">Выбранный ответ</span>
+                <span className="reveal-choice__value">
+                  {r.choiceIndex != null
+                    ? `${String.fromCharCode(65 + r.choiceIndex)}. ${options[r.choiceIndex] ?? "—"}`
+                    : "Ответ не выбран"}
+                </span>
               </div>
             </div>
           );

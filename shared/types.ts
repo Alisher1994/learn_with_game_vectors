@@ -42,6 +42,8 @@ export interface GamePublicState {
   /** После reveal: кто был быстрее при обоих верных */
   lastReveal: {
     correctIndex: number;
+    blueChoiceIndex: number | null;
+    redChoiceIndex: number | null;
     blueCorrect: boolean;
     redCorrect: boolean;
     blueTimeSec: number | null;

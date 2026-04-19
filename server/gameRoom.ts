@@ -35,6 +35,8 @@ type Phase = "lobby" | "playing" | "between" | "finished";
 
 interface LastReveal {
   correctIndex: number;
+  blueChoiceIndex: number | null;
+  redChoiceIndex: number | null;
   blueCorrect: boolean;
   redCorrect: boolean;
   blueTimeSec: number | null;
@@ -212,6 +214,8 @@ export class GameRoom {
 
     this.inner.lastReveal = {
       correctIndex,
+      blueChoiceIndex: blue.currentAnswer,
+      redChoiceIndex: red.currentAnswer,
       blueCorrect,
       redCorrect,
       blueTimeSec,
