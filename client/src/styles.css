@@ -758,6 +758,34 @@ select:focus {
   margin-bottom: 0.45rem;
 }
 
+.fight-hud__teams {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.5rem;
+  align-items: center;
+  margin-bottom: 0.35rem;
+}
+
+.fight-hud__team {
+  font-size: clamp(0.9rem, 1.8vw, 1.25rem);
+  font-weight: 900;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.fight-hud__team--blue {
+  color: #77abff;
+  text-align: left;
+}
+
+.fight-hud__team--red {
+  color: #ff8691;
+  text-align: right;
+}
+
 .fight-hud__num {
   font-weight: 900;
   font-variant-numeric: tabular-nums;

@@ -24,11 +24,13 @@ function FightHud({
   questionIndex,
   phase,
   lang,
+  labels,
 }: {
   scores: { blue: number; red: number };
   questionIndex: number;
   phase: GamePublicState["phase"];
   lang: Lang;
+  labels: { blue: string; red: string };
 }) {
   const copy = t[lang];
   const bp = fightBarPercent(scores.blue);
@@ -41,6 +43,10 @@ function FightHud({
   return (
     <div className="fight-hud">
       <div className="fight-hud__meta">{roundLabel}</div>
+      <div className="fight-hud__teams">
+        <span className="fight-hud__team fight-hud__team--blue">{labels.blue || copy.blueTeam}</span>
+        <span className="fight-hud__team fight-hud__team--red">{labels.red || copy.redTeam}</span>
+      </div>
       <div className="fight-hud__scores">
         <span className="fight-hud__num fight-hud__num--blue">{scores.blue}</span>
         <span className="fight-hud__vs">VS</span>
@@ -268,6 +274,10 @@ export function HostPage() {
           questionIndex={state.questionIndex}
           phase={state.phase}
           lang={lang}
+          labels={{
+            blue: state.blue.groupLabel,
+            red: state.red.groupLabel,
+          }}
         />
       )}
 
