@@ -986,6 +986,18 @@ select:focus {
   overflow: visible;
 }
 
+.host-game-card::before {
+  background:
+    linear-gradient(
+      90deg,
+      rgba(77, 145, 255, 0.14),
+      transparent 22%,
+      transparent 78%,
+      rgba(255, 91, 116, 0.14)
+    ),
+    linear-gradient(180deg, rgba(255, 255, 255, 0.05), transparent 36%);
+}
+
 .host-lottie-confetti {
   position: absolute;
   inset: -8% -4% auto -4%;
