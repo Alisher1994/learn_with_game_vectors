@@ -280,7 +280,6 @@ export function HostPage() {
             flexWrap: "wrap",
           }}
         >
-          <AiRobotMascot mood={state?.phase === "finished" ? "win" : "happy"} size={144} />
           <div>
             <h2 style={{ margin: "0 0 0.25rem", fontSize: "1.6rem" }}>{copy.arenaTitle}</h2>
             <p style={{ margin: 0, color: "var(--muted)", lineHeight: 1.5 }}>{copy.arenaText}</p>
@@ -288,6 +287,9 @@ export function HostPage() {
         </div>
 
         <div className="host-single-qr">
+          <div className="host-single-qr__mascot">
+            <AiRobotMascot mood={state?.phase === "finished" ? "win" : "happy"} size={132} />
+          </div>
           {qrJoin ? <img src={qrJoin} alt="QR join" className="host-single-qr__image" /> : null}
           <div className="host-single-qr__text">
             <div className="host-single-qr__title">{copy.oneQrTitle}</div>

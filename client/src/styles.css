@@ -1003,6 +1003,13 @@ select:focus {
   border-radius: 20px;
 }
 
+.host-single-qr__mascot {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 132px;
+}
+
 .host-single-qr__text {
   max-width: 360px;
 }
