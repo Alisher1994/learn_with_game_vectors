@@ -9,6 +9,8 @@ export function TeacherPage() {
   const [classes, setClasses] = useState<ClassEntry[]>([]);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
+  const [saveMessage, setSaveMessage] = useState("");
+  const [saveError, setSaveError] = useState("");
   const { lang } = useI18n();
   const copy = t[lang];
 
@@ -21,17 +23,34 @@ export function TeacherPage() {
 
   async function save() {
     setSaving(true);
+    setSaveMessage("");
+    setSaveError("");
     try {
       await api("/api/classes", {
         method: "PUT",
         body: JSON.stringify({ classes }),
       });
+      setSaveMessage(
+        lang === "uz"
+          ? "O'zgarishlar saqlandi."
+          : "Изменения сохранены.",
+      );
+    } catch (error) {
+      setSaveError(
+        error instanceof Error
+          ? error.message
+          : lang === "uz"
+            ? "Saqlashda xatolik yuz berdi."
+            : "Ошибка при сохранении.",
+      );
     } finally {
       setSaving(false);
     }
   }
 
   function addClass() {
+    setSaveMessage("");
+    setSaveError("");
     setClasses((c) => [
       ...c,
       { id: nanoid(10), name: copy.newClass, students: [""] },
@@ -39,16 +58,22 @@ export function TeacherPage() {
   }
 
   function updateClass(id: string, name: string) {
+    setSaveMessage("");
+    setSaveError("");
     setClasses((list) =>
       list.map((x) => (x.id === id ? { ...x, name } : x)),
     );
   }
 
   function removeClass(id: string) {
+    setSaveMessage("");
+    setSaveError("");
     setClasses((list) => list.filter((x) => x.id !== id));
   }
 
   function addStudent(classId: string) {
+    setSaveMessage("");
+    setSaveError("");
     setClasses((list) =>
       list.map((c) =>
         c.id === classId ? { ...c, students: [...c.students, ""] } : c,
@@ -57,6 +82,8 @@ export function TeacherPage() {
   }
 
   function setStudent(classId: string, index: number, value: string) {
+    setSaveMessage("");
+    setSaveError("");
     setClasses((list) =>
       list.map((c) => {
         if (c.id !== classId) return c;
@@ -68,6 +95,8 @@ export function TeacherPage() {
   }
 
   function removeStudent(classId: string, index: number) {
+    setSaveMessage("");
+    setSaveError("");
     setClasses((list) =>
       list.map((c) => {
         if (c.id !== classId) return c;
@@ -169,6 +198,16 @@ export function TeacherPage() {
           >
             {saving ? copy.saving : copy.save}
           </button>
+          {saveMessage ? (
+            <p style={{ margin: "0.75rem 0 0", color: "var(--ok)", fontWeight: 800 }}>
+              {saveMessage}
+            </p>
+          ) : null}
+          {saveError ? (
+            <p style={{ margin: "0.75rem 0 0", color: "var(--red)", fontWeight: 800 }}>
+              {saveError}
+            </p>
+          ) : null}
         </div>
       </div>
     </div>
