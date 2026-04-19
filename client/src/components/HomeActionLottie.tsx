@@ -66,16 +66,6 @@ export function HomeActionLottie({
         height: size,
       }}
     >
-      <div
-        className="home-action-lottie__fallback"
-        style={{
-          fontSize: Math.round(size * 0.56),
-          fontWeight: 900,
-          lineHeight: 1,
-        }}
-      >
-        {FALLBACK[kind]}
-      </div>
       <DotLottieReact
         src={src}
         loop

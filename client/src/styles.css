@@ -521,17 +521,6 @@ select:focus {
   color: currentColor;
 }
 
-.home-action-lottie__fallback {
-  position: absolute;
-  inset: 0;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  color: currentColor;
-  opacity: 0.28;
-  pointer-events: none;
-}
-
 .home-tile__title {
   font-size: clamp(1.45rem, 3vw, 2rem);
   font-weight: 900;
