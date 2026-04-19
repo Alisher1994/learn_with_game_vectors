@@ -143,182 +143,185 @@ export function JoinPage() {
 
   return (
     <div className="page">
-      <div className="row" style={{ marginBottom: "1rem" }}>
-        <AiRobotMascot mood="happy" size={56} />
-        <div>
-          <h1 style={{ margin: 0, fontSize: "1.35rem", color: teamColor }}>
-            {teamLabel}
-          </h1>
-          <p style={{ margin: "0.15rem 0 0", color: "var(--muted)", fontSize: "0.9rem" }}>
-            Комната {roomId}
-          </p>
-        </div>
-      </div>
-
-      {state?.phase === "lobby" && (
-        <div className="card" style={{ marginBottom: "1rem" }}>
-          <h2 style={{ marginTop: 0, fontSize: "1.1rem" }}>Команда</h2>
-
-          <label className="label">Аватар</label>
-          <div
-            style={{
-              display: "flex",
-              flexWrap: "wrap",
-              gap: "0.5rem",
-              marginBottom: "1rem",
-            }}
-          >
-            {TEAM_AVATARS.map((a) => (
-              <button
-                key={a.id}
-                type="button"
-                className="btn btn-ghost"
-                onClick={() => setAvatarId(a.id)}
-                style={{
-                  opacity: avatarId === a.id ? 1 : 0.65,
-                  outline:
-                    avatarId === a.id ? `2px solid ${teamColor}` : undefined,
-                  borderRadius: 12,
-                }}
-                title={a.label}
-              >
-                <span style={{ fontSize: "1.5rem" }}>{a.emoji}</span>
-              </button>
-            ))}
+      <div className="join-shell">
+        <div className="card join-stage">
+          <div className="join-header">
+            <div style={{ display: "flex", justifyContent: "center" }}>
+              <AiRobotMascot mood="happy" size={132} />
+            </div>
+            <div>
+              <h1 style={{ margin: 0, fontSize: "1.8rem", color: teamColor }}>
+                {teamLabel}
+              </h1>
+              <p style={{ margin: "0.35rem 0 0", color: "var(--muted)", lineHeight: 1.5 }}>
+                Подключайтесь спокойно: экран стал компактнее, а ответы
+                помещаются удобнее даже на небольшом телефоне.
+              </p>
+              <div className="join-chip">Комната {roomId}</div>
+            </div>
           </div>
-
-          {classes.length > 0 && (
-            <>
-              <label className="label">Класс из справочника (учитель)</label>
-              <select
-                className="input"
-                value={pickedClassId}
-                onChange={(e) => applyClassFromList(e.target.value)}
-                style={{ marginBottom: "0.75rem" }}
-              >
-                <option value="">— выбрать —</option>
-                {classes.map((c) => (
-                  <option key={c.id} value={c.id}>
-                    {c.name} ({c.students.length} уч.)
-                  </option>
-                ))}
-              </select>
-            </>
-          )}
-
-          <label className="label">Класс (например 8А)</label>
-          <input
-            className="input"
-            value={className}
-            onChange={(e) => setClassName(e.target.value)}
-            placeholder="8А"
-            style={{ marginBottom: "0.75rem" }}
-          />
-
-          <label className="label">Название группы</label>
-          <input
-            className="input"
-            value={groupLabel}
-            onChange={(e) => setGroupLabel(e.target.value)}
-            style={{ marginBottom: "0.75rem" }}
-          />
-
-          <label className="label">Участники (ФИО)</label>
-          {members.map((m, i) => (
-            <input
-              key={i}
-              className="input"
-              value={m}
-              onChange={(e) => setMember(i, e.target.value)}
-              placeholder={`Ученик ${i + 1}`}
-              style={{ marginBottom: "0.45rem" }}
-            />
-          ))}
-          <button type="button" className="btn btn-ghost" onClick={addMember}>
-            + Добавить участника
-          </button>
-
-          <label
-            style={{
-              display: "flex",
-              alignItems: "center",
-              gap: "0.5rem",
-              marginTop: "1rem",
-              cursor: "pointer",
-            }}
-          >
-            <input
-              type="checkbox"
-              checked={ready}
-              onChange={(e) => setReady(e.target.checked)}
-            />
-            <span>Мы готовы (можно начинать, когда подключится вторая команда)</span>
-          </label>
         </div>
-      )}
 
-      {state && state.phase === "playing" && q && (
-        <div className="card">
-          <h2 style={{ marginTop: 0, fontSize: "1.05rem", lineHeight: 1.35 }}>
-            {q.text}
-          </h2>
-          <div style={{ display: "flex", flexDirection: "column", gap: "0.5rem" }}>
-            {q.options.map((opt, i) => {
-              const mine =
-                team === "blue"
-                  ? state.blue.currentAnswer
-                  : state.red.currentAnswer;
-              const disabled = mine !== null;
-              const isMine = mine === i;
-              return (
-                <button
-                  key={i}
-                  type="button"
-                  className="btn"
-                  disabled={disabled}
-                  onClick={() => submitAnswer(i)}
-                  style={{
-                    justifyContent: "flex-start",
-                    textAlign: "left",
-                    background: isMine
-                      ? "rgba(59,130,246,0.25)"
-                      : "rgba(148,163,184,0.12)",
-                    color: "var(--text)",
-                    border:
-                      isMine ? `2px solid ${teamColor}` : "1px solid transparent",
-                  }}
-                >
-                  {String.fromCharCode(65 + i)}. {opt}
-                </button>
-              );
-            })}
-          </div>
-          {(team === "blue" ? state.blue : state.red).currentAnswer !== null && (
-            <p style={{ marginTop: "1rem", color: "var(--muted)" }}>
-              Ответ отправлен. Ждём вторую команду…
+        {state?.phase === "lobby" && (
+          <div className="card">
+            <h2 className="join-card-title">Соберите команду</h2>
+            <p className="join-card-subtitle">
+              Сначала выберите образ команды, затем быстро заполните участников и
+              нажмите готовность.
             </p>
-          )}
-        </div>
-      )}
 
-      {state && state.phase === "between" && (
-        <div className="card">
-          <p style={{ margin: 0 }}>Идёт подсчёт на большом экране…</p>
-        </div>
-      )}
+            <label className="label">Аватар команды</label>
+            <div className="avatar-grid">
+              {TEAM_AVATARS.map((a) => (
+                <button
+                  key={a.id}
+                  type="button"
+                  className={`avatar-pill ${avatarId === a.id ? "avatar-pill--active" : ""}`}
+                  onClick={() => setAvatarId(a.id)}
+                  style={{
+                    outline: avatarId === a.id ? `2px solid ${teamColor}` : undefined,
+                    boxShadow:
+                      avatarId === a.id ? `0 14px 28px ${teamColor}33` : undefined,
+                  }}
+                  title={a.label}
+                >
+                  <span>{a.emoji}</span>
+                </button>
+              ))}
+            </div>
 
-      {state && state.phase === "finished" && (
-        <div className="card" style={{ textAlign: "center" }}>
-          <p>Игра окончена. Смотрите итог на экране учителя.</p>
-          <Link to="/ratings" className="btn btn-ghost" style={{ marginTop: "0.75rem" }}>
-            Рейтинг
-          </Link>
-        </div>
-      )}
+            {classes.length > 0 && (
+              <>
+                <label className="label">Класс из справочника</label>
+                <select
+                  className="input"
+                  value={pickedClassId}
+                  onChange={(e) => applyClassFromList(e.target.value)}
+                  style={{ marginBottom: "0.75rem" }}
+                >
+                  <option value="">— выбрать —</option>
+                  {classes.map((c) => (
+                    <option key={c.id} value={c.id}>
+                      {c.name} ({c.students.length} уч.)
+                    </option>
+                  ))}
+                </select>
+              </>
+            )}
 
-      <p style={{ fontSize: "0.85rem", color: "var(--muted)", marginTop: "1rem" }}>
-        Подсказка: учитель может заранее заполнить классы в разделе «Справочник».
-      </p>
+            <div className="join-grid">
+              <div>
+                <label className="label">Класс</label>
+                <input
+                  className="input"
+                  value={className}
+                  onChange={(e) => setClassName(e.target.value)}
+                  placeholder="8А"
+                  style={{ marginBottom: "0.75rem" }}
+                />
+              </div>
+
+              <div>
+                <label className="label">Название группы</label>
+                <input
+                  className="input"
+                  value={groupLabel}
+                  onChange={(e) => setGroupLabel(e.target.value)}
+                  style={{ marginBottom: "0.75rem" }}
+                />
+              </div>
+            </div>
+
+            <label className="label">Участники</label>
+            <div className="member-list">
+              {members.map((m, i) => (
+                <input
+                  key={i}
+                  className="input"
+                  value={m}
+                  onChange={(e) => setMember(i, e.target.value)}
+                  placeholder={`Ученик ${i + 1}`}
+                />
+              ))}
+            </div>
+            <button type="button" className="btn btn-ghost" onClick={addMember} style={{ marginTop: "0.65rem" }}>
+              + Добавить участника
+            </button>
+
+            <label className="join-ready">
+              <input
+                type="checkbox"
+                checked={ready}
+                onChange={(e) => setReady(e.target.checked)}
+              />
+              <span>
+                <strong style={{ display: "block", marginBottom: 4 }}>Мы готовы</strong>
+                Можно начинать, когда подключится вторая команда.
+              </span>
+            </label>
+          </div>
+        )}
+
+        {state && state.phase === "playing" && q && (
+          <div className="card quiz-shell">
+            <div className="quiz-topline">
+              <div className="quiz-step">
+                Вопрос {state.questionIndex + 1} из {VECTOR_QUESTIONS.length}
+              </div>
+              <div style={{ color: teamColor, fontWeight: 800 }}>{groupLabel}</div>
+            </div>
+            <h2 className="quiz-question">{q.text}</h2>
+            <div className="quiz-options">
+              {q.options.map((opt, i) => {
+                const mine =
+                  team === "blue"
+                    ? state.blue.currentAnswer
+                    : state.red.currentAnswer;
+                const disabled = mine !== null;
+                const isMine = mine === i;
+                return (
+                  <button
+                    key={i}
+                    type="button"
+                    className="btn quiz-option"
+                    disabled={disabled}
+                    onClick={() => submitAnswer(i)}
+                    style={{
+                      background: isMine ? `${teamColor}22` : "rgba(255,255,255,0.08)",
+                      border: isMine ? `2px solid ${teamColor}` : "1px solid var(--card-border)",
+                    }}
+                  >
+                    <span className="quiz-option__letter">{String.fromCharCode(65 + i)}</span>
+                    <span>{opt}</span>
+                  </button>
+                );
+              })}
+            </div>
+            {(team === "blue" ? state.blue : state.red).currentAnswer !== null && (
+              <p className="quiz-status">Ответ отправлен. Ждём вторую команду…</p>
+            )}
+          </div>
+        )}
+
+        {state && state.phase === "between" && (
+          <div className="card">
+            <p style={{ margin: 0 }}>Идёт подсчёт на большом экране…</p>
+          </div>
+        )}
+
+        {state && state.phase === "finished" && (
+          <div className="card" style={{ textAlign: "center" }}>
+            <p>Игра окончена. Смотрите итог на экране учителя.</p>
+            <Link to="/ratings" className="btn btn-ghost" style={{ marginTop: "0.75rem" }}>
+              Рейтинг
+            </Link>
+          </div>
+        )}
+
+        <p style={{ fontSize: "0.85rem", color: "var(--muted)", margin: 0 }}>
+          Подсказка: учитель может заранее заполнить классы в разделе «Справочник».
+        </p>
+      </div>
     </div>
   );
 }

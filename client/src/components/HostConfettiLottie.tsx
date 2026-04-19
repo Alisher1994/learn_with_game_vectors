@@ -14,7 +14,13 @@ export function HostConfettiLottie({ side }: { side: Side }) {
           src={HOST_LOTTIE.confetti}
           loop
           autoplay
-          style={{ width: "100%", height: "min(42vh, 320px)", maxWidth: 900 }}
+          className="host-lottie-confetti__burst"
+        />
+        <DotLottieReact
+          src={HOST_LOTTIE.confetti}
+          loop
+          autoplay
+          className="host-lottie-confetti__burst"
         />
       </div>
     );
@@ -29,7 +35,7 @@ export function HostConfettiLottie({ side }: { side: Side }) {
         src={HOST_LOTTIE.confetti}
         loop
         autoplay
-        style={{ width: "100%", height: "min(40vh, 300px)", maxWidth: 480 }}
+        className="host-lottie-confetti__burst"
       />
     </div>
   );

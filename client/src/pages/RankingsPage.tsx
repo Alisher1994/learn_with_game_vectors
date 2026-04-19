@@ -33,9 +33,11 @@ export function RankingsPage() {
       </div>
 
       <div className="card">
-        <h1 style={{ marginTop: 0, fontSize: "1.35rem" }}>Таблица рейтингов</h1>
-        <p style={{ color: "var(--muted)", marginTop: 0 }}>
-          Сохраняются автоматически после каждой завершённой игры.
+        <h1 style={{ marginTop: 0, fontSize: "1.8rem" }}>Зал достижений</h1>
+        <p style={{ color: "var(--muted)", marginTop: 0, lineHeight: 1.5 }}>
+          После каждой игры результат сохраняется автоматически. Вместо сухой
+          таблицы здесь теперь карточки с понятной подачей команды, очков и
+          участников.
         </p>
 
         {loading && <p>Загрузка…</p>}
@@ -45,52 +47,53 @@ export function RankingsPage() {
         )}
 
         {!loading && rows.length > 0 && (
-          <div style={{ overflowX: "auto" }}>
-            <table
-              style={{
-                width: "100%",
-                borderCollapse: "collapse",
-                fontSize: "0.92rem",
-              }}
-            >
-              <thead>
-                <tr style={{ color: "var(--muted)", textAlign: "left" }}>
-                  <th style={{ padding: "8px 6px" }}>Дата</th>
-                  <th style={{ padding: "8px 6px" }}>Класс</th>
-                  <th style={{ padding: "8px 6px" }}>Команда</th>
-                  <th style={{ padding: "8px 6px" }}>Очки</th>
-                  <th style={{ padding: "8px 6px" }}>Участники</th>
-                </tr>
-              </thead>
-              <tbody>
-                {rows.map((r) => (
-                  <tr
-                    key={r.id}
-                    style={{
-                      borderTop: "1px solid rgba(148,163,184,0.12)",
-                      color:
-                        r.team === "blue" ? "var(--blue)" : "var(--red)",
-                    }}
-                  >
-                    <td style={{ padding: "8px 6px", color: "var(--text)" }}>
-                      {new Date(r.createdAt).toLocaleString("ru-RU")}
-                    </td>
-                    <td style={{ padding: "8px 6px", color: "var(--text)" }}>
-                      {r.className}
-                    </td>
-                    <td style={{ padding: "8px 6px", fontWeight: 700 }}>
-                      {r.groupLabel}
-                    </td>
-                    <td style={{ padding: "8px 6px", color: "var(--text)" }}>
-                      {r.score}
-                    </td>
-                    <td style={{ padding: "8px 6px", color: "var(--muted)" }}>
-                      {r.members.filter(Boolean).join(", ") || "—"}
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
+          <div className="ranking-grid">
+            {rows.map((r, index) => {
+              const medal = index === 0 ? "🥇" : index === 1 ? "🥈" : index === 2 ? "🥉" : `#${index + 1}`;
+              return (
+                <div
+                  key={r.id}
+                  className={`ranking-card ranking-card--${r.team}`}
+                  style={{ color: r.team === "blue" ? "var(--blue)" : "var(--red)" }}
+                >
+                  <div className="ranking-head">
+                    <div style={{ display: "flex", gap: "0.85rem", alignItems: "center" }}>
+                      <div className="ranking-medal">{medal}</div>
+                      <div>
+                        <div style={{ fontSize: "1.2rem", fontWeight: 900 }}>
+                          {r.groupLabel || (r.team === "blue" ? "Синие" : "Красные")}
+                        </div>
+                        <div style={{ color: "var(--muted)", marginTop: 4 }}>
+                          {new Date(r.createdAt).toLocaleString("ru-RU")}
+                        </div>
+                      </div>
+                    </div>
+                    <div className="ranking-score">{r.score} очков</div>
+                  </div>
+
+                  <div className="ranking-meta">
+                    <div className="ranking-meta__item">
+                      <span className="ranking-meta__label">Класс</span>
+                      <span className="ranking-meta__value">{r.className || "—"}</span>
+                    </div>
+                    <div className="ranking-meta__item">
+                      <span className="ranking-meta__label">Комната</span>
+                      <span className="ranking-meta__value">{r.roomId}</span>
+                    </div>
+                  </div>
+
+                  <div className="ranking-members">
+                    {(r.members.filter(Boolean).length
+                      ? r.members.filter(Boolean)
+                      : ["Участники не указаны"]).map((member, memberIndex) => (
+                      <span key={`${r.id}-${memberIndex}`} className="ranking-member">
+                        {member}
+                      </span>
+                    ))}
+                  </div>
+                </div>
+              );
+            })}
           </div>
         )}
       </div>

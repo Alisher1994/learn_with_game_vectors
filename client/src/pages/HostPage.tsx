@@ -286,15 +286,16 @@ export function HostPage() {
         >
           <AiRobotMascot
             mood={state?.phase === "finished" ? "win" : "happy"}
-            size={88}
+            size={144}
           />
           <div>
-            <h2 style={{ margin: "0 0 0.25rem", fontSize: "1.35rem" }}>
+            <h2 style={{ margin: "0 0 0.25rem", fontSize: "1.6rem" }}>
               Экран для класса
             </h2>
-            <p style={{ margin: 0, color: "var(--muted)" }}>
-              Два QR-кода — синяя и красная команда. Когда команды нажмут «Мы готовы»,
-              на экране появятся их аватары. Когда обе в сети — можно начинать игру.
+            <p style={{ margin: 0, color: "var(--muted)", lineHeight: 1.5 }}>
+              Два QR-кода для синей и красной команды. Экран сделан ярче и
+              понятнее: детям легче считать статус команд, персонажа и моменты
+              победы.
             </p>
           </div>
         </div>
@@ -396,7 +397,7 @@ export function HostPage() {
                   {q.options[state.lastReveal.correctIndex]}
                 </div>
               </div>
-              <RevealTable
+              <RevealShowcase
                 last={state.lastReveal}
                 labels={{ blue: state.blue.groupLabel, red: state.red.groupLabel }}
               />
@@ -412,7 +413,7 @@ export function HostPage() {
           )}
 
           {state.phase === "finished" && (
-            <div style={{ marginTop: "0.5rem", textAlign: "center", position: "relative", minHeight: 320 }}>
+            <div className="winner-stage">
               <HostConfettiLottie
                 side={
                   state.winner === "blue"
@@ -425,13 +426,10 @@ export function HostPage() {
                 }
               />
               <div style={{ position: "relative", zIndex: 2 }}>
-                <AiRobotMascot mood="win" size={120} />
-                <h3
-                  style={{
-                    margin: "0.75rem 0",
-                    fontSize: "clamp(1.5rem, 4vw, 2.5rem)",
-                  }}
-                >
+                <div className="winner-stage__mascot">
+                  <AiRobotMascot mood="win" size={176} />
+                </div>
+                <h3 className="winner-stage__title">
                   {state.winner === "draw" && "Ничья!"}
                   {state.winner === "blue" && (
                     <>
@@ -450,12 +448,12 @@ export function HostPage() {
                     </>
                   )}
                 </h3>
-                <p style={{ fontSize: "clamp(1.5rem, 5vw, 2.5rem)", fontWeight: 900 }}>
+                <p className="winner-stage__score">
                   <span className="team-blue">{state.scores.blue}</span>
                   <span style={{ color: "var(--muted)", margin: "0 0.5rem" }}>:</span>
                   <span className="team-red">{state.scores.red}</span>
                 </p>
-                <p style={{ color: "var(--muted)", fontSize: "clamp(0.9rem, 2vw, 1.1rem)" }}>
+                <p className="winner-stage__note">
                   Результаты сохранены в таблице рейтингов.
                 </p>
                 <div className="host-trophy-wrap">
@@ -486,7 +484,7 @@ export function HostPage() {
   );
 }
 
-function RevealTable({
+function RevealShowcase({
   last,
   labels,
 }: {
@@ -516,47 +514,57 @@ function RevealTable({
     });
 
   return (
-    <table
-      style={{
-        width: "100%",
-        borderCollapse: "collapse",
-        fontSize: "clamp(0.95rem, 2.2vw, 1.35rem)",
-        marginTop: "0.75rem",
-      }}
-    >
-      <thead>
-        <tr style={{ color: "var(--muted)", textAlign: "left" }}>
-          <th style={{ padding: "6px 4px" }}>Команда</th>
-          <th style={{ padding: "6px 4px" }}>Время (с)</th>
-          <th style={{ padding: "6px 4px" }}>Верно</th>
-          <th style={{ padding: "6px 4px" }}>Очки</th>
-        </tr>
-      </thead>
-      <tbody>
-        {rows.map((r) => (
-          <tr
-            key={r.team}
-            style={{
-              borderTop: "1px solid rgba(148,163,184,0.15)",
-              color: r.team === "blue" ? "var(--blue)" : "var(--red)",
-            }}
-          >
-            <td style={{ padding: "8px 4px", fontWeight: 700 }}>
-              {r.label}
-              {last.fasterTeam === r.team && last.blueCorrect && last.redCorrect && (
-                <span style={{ marginLeft: 6, fontSize: "0.8rem", color: "var(--warn)" }}>
-                  (быстрее)
-                </span>
-              )}
-            </td>
-            <td style={{ padding: "8px 4px" }}>
-              {r.time != null ? r.time.toFixed(2) : "—"}
-            </td>
-            <td style={{ padding: "8px 4px" }}>{r.ok ? "да" : "нет"}</td>
-            <td style={{ padding: "8px 4px" }}>+{r.pts}</td>
-          </tr>
-        ))}
-      </tbody>
-    </table>
+    <div className="result-showcase">
+      <div className="reveal-cards">
+        {rows.map((r) => {
+          const isFastest =
+            last.fasterTeam === r.team && last.blueCorrect && last.redCorrect;
+
+          return (
+            <div
+              key={r.team}
+              className={`reveal-card reveal-card--${r.team}`}
+              style={{ color: r.team === "blue" ? "var(--blue)" : "var(--red)" }}
+            >
+              <div className="reveal-card__topline">
+                <h4 className="reveal-card__title">{r.label}</h4>
+                <div
+                  style={{
+                    display: "flex",
+                    gap: "0.45rem",
+                    flexWrap: "wrap",
+                    justifyContent: "flex-end",
+                  }}
+                >
+                  <span
+                    className={`reveal-badge ${r.ok ? "reveal-badge--ok" : "reveal-badge--miss"}`}
+                  >
+                    {r.ok ? "Верно" : "Ошибка"}
+                  </span>
+                  {isFastest && (
+                    <span className="reveal-badge reveal-badge--fast">
+                      Самые быстрые
+                    </span>
+                  )}
+                </div>
+              </div>
+
+              <div className="reveal-stat-grid">
+                <div className="reveal-stat">
+                  <span className="reveal-stat__label">Время</span>
+                  <span className="reveal-stat__value">
+                    {r.time != null ? `${r.time.toFixed(2)} c` : "—"}
+                  </span>
+                </div>
+                <div className="reveal-stat">
+                  <span className="reveal-stat__label">Очки</span>
+                  <span className="reveal-stat__value">+{r.pts}</span>
+                </div>
+              </div>
+            </div>
+          );
+        })}
+      </div>
+    </div>
   );
 }

@@ -21,41 +21,23 @@ export function HomePage() {
 
   return (
     <div className="page">
-      <div className="card" style={{ textAlign: "center" }}>
-        <div
-          style={{
-            display: "flex",
-            justifyContent: "center",
-            gap: "1rem",
-            alignItems: "center",
-            flexWrap: "wrap",
-          }}
-        >
-          <AiRobotMascot mood="happy" size={100} />
-          <div style={{ textAlign: "left", maxWidth: 420 }}>
-            <h1 style={{ margin: "0 0 0.35rem", fontSize: "1.75rem" }}>
-              Вектор-баттл
-            </h1>
-            <p style={{ margin: 0, color: "var(--muted)", lineHeight: 1.5 }}>
-              Интерактивная игра-презентация по векторам для 7–8 класса. Две
-              команды, вопросы на экране, ответы с телефонов — кто быстрее и
-              точнее?
+      <div className="card">
+        <div className="hero-panel">
+          <div style={{ display: "flex", justifyContent: "center" }}>
+            <AiRobotMascot mood="happy" size={148} />
+          </div>
+          <div>
+            <div className="hero-kicker">Игровая викторина для класса</div>
+            <h1 className="hero-title">Вектор-баттл</h1>
+            <p className="hero-text">
+              Яркая математическая игра для детей: две команды, быстрые ответы,
+              большой экран, дружелюбный персонаж и понятные подсказки без
+              перегруза.
             </p>
           </div>
         </div>
 
-        <div
-          style={{
-            marginTop: "1.5rem",
-            display: "flex",
-            flexDirection: "column",
-            gap: "0.65rem",
-            alignItems: "stretch",
-            maxWidth: 360,
-            marginLeft: "auto",
-            marginRight: "auto",
-          }}
-        >
+        <div className="home-actions">
           <button
             type="button"
             className="btn btn-primary"
@@ -72,9 +54,9 @@ export function HomePage() {
           </Link>
         </div>
 
-        <p style={{ marginTop: "1.25rem", fontSize: "0.9rem", color: "var(--muted)" }}>
-          Ученики заходят по QR-коду с экрана игры и выбирают синюю или красную
-          команду.
+        <p style={{ marginTop: "1.2rem", fontSize: "0.95rem", color: "var(--muted)" }}>
+          Ученики подключаются по QR-коду, выбирают команду и отвечают прямо со
+          своих телефонов.
         </p>
       </div>
     </div>
