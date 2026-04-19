@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
+import { DotLottieReact } from "@lottiefiles/dotlottie-react";
 import { AiRobotMascot } from "../components/AiRobotMascot";
 import { api } from "../socketUrl";
 import { t, useI18n } from "../i18n";
@@ -46,9 +47,25 @@ export function HomePage() {
           disabled={loading}
           onClick={() => void createRoom()}
         >
+          <div className="home-tile__media">
+            <DotLottieReact
+              src="/Play button.lottie"
+              loop
+              autoplay
+              className="home-tile__lottie"
+            />
+          </div>
           <span className="home-tile__title">{loading ? copy.creatingRoom : copy.startShort}</span>
         </button>
         <Link to="/ratings" className="home-tile home-tile--ghost">
+          <div className="home-tile__media">
+            <DotLottieReact
+              src="/Star rating.lottie"
+              loop
+              autoplay
+              className="home-tile__lottie"
+            />
+          </div>
           <span className="home-tile__title">{copy.rankingShort}</span>
         </Link>
       </div>

@@ -461,18 +461,21 @@ select:focus {
 }
 
 .home-actions--center {
-  grid-template-columns: repeat(2, minmax(180px, 220px));
+  grid-template-columns: repeat(2, minmax(240px, 280px));
   justify-content: center;
   max-width: none;
   margin-top: 0;
+  gap: 1.1rem;
 }
 
 .home-tile {
-  display: flex;
-  align-items: center;
+  display: grid;
+  place-items: center;
+  gap: 0.35rem;
   justify-content: center;
-  min-height: 180px;
-  border-radius: 28px;
+  min-height: 240px;
+  padding: 1.2rem;
+  border-radius: 32px;
   text-decoration: none;
   border: 1px solid var(--card-border);
   background: var(--surface);
@@ -494,10 +497,24 @@ select:focus {
   background: rgba(255, 255, 255, 0.18);
 }
 
+.home-tile__media {
+  width: 112px;
+  height: 112px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.home-tile__lottie {
+  width: 112px;
+  height: 112px;
+}
+
 .home-tile__title {
-  font-size: clamp(1.3rem, 3vw, 1.8rem);
+  font-size: clamp(1.45rem, 3vw, 2rem);
   font-weight: 900;
   text-align: center;
+  line-height: 1.1;
 }
 
 .join-shell {
@@ -1266,7 +1283,7 @@ select:focus {
   }
 
   .home-tile {
-    min-height: 140px;
+    min-height: 180px;
   }
 
   .home-settings {
