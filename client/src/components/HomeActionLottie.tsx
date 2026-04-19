@@ -4,8 +4,8 @@ import { useEffect, useState } from "react";
 type ActionKind = "play" | "rating";
 
 const ACTION_LOTTIE: Record<ActionKind, string> = {
-  play: "/Play button.lottie",
-  rating: "/Star rating.lottie",
+  play: "/play-button.lottie",
+  rating: "/star-rating.lottie",
 };
 
 const FALLBACK: Record<ActionKind, string> = {
@@ -40,6 +40,7 @@ export function HomeActionLottie({
     return (
       <div
         aria-hidden
+        className="home-action-lottie home-action-lottie--fallback"
         style={{
           width: size,
           height: size,
@@ -57,16 +58,34 @@ export function HomeActionLottie({
   }
 
   return (
-    <DotLottieReact
-      src={src}
-      loop
-      autoplay
+    <div
       aria-hidden
+      className="home-action-lottie"
       style={{
         width: size,
         height: size,
-        flexShrink: 0,
       }}
-    />
+    >
+      <div
+        className="home-action-lottie__fallback"
+        style={{
+          fontSize: Math.round(size * 0.56),
+          fontWeight: 900,
+          lineHeight: 1,
+        }}
+      >
+        {FALLBACK[kind]}
+      </div>
+      <DotLottieReact
+        src={src}
+        loop
+        autoplay
+        style={{
+          width: size,
+          height: size,
+          flexShrink: 0,
+        }}
+      />
+    </div>
   );
 }
